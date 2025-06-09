@@ -1,6 +1,4 @@
-package de.ftracker.model;
-
-import jakarta.validation.Valid;
+package de.ftracker.model.costDTOs;
 
 import java.util.ArrayList;
 import java.util.List;

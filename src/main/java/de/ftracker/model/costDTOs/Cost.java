@@ -1,4 +1,4 @@
-package de.ftracker.model;
+package de.ftracker.model.costDTOs;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

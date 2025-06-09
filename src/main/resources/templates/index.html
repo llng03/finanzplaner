@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tracker</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1 th:text="${currMonth} + ' ' + ${currYear}">this month</h1>
+    <div class="form-container">
+        <form method="post" th:object="${einnahme}" th:action="@{/einnahme}">
+            <h2>Einnahmen</h2>
+            <div class="form-field">
+                <label for="descIn">Einnahme:</label>
+                <input type="text" id="descIn" th:field="*{desc}" placeholder="z.B. Gehalt">
+                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+            </div>
+
+            <div class="form-field">
+                <label for="costIn">Betrag (in €):</label>
+                <input type="number" id="costIn" th:field="*{betrag}" step="0.01" min="0" placeholder="z. B. 12.50">
+                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+            </div>
+
+            <button type="submit">Hinzufügen</button>
+        </form>
+        <form method="post" th:object="${ausgabe}" th:action="@{/ausgabe}">
+            <h2>Ausgaben</h2>
+            <div class="form-field">
+                <label for="descOut">Ausgabe:</label>
+                <input type="text" id="descOut" th:field="*{desc}" placeholder="z.B. Einkauf bei Aldi">
+                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+            </div>
+
+            <div class="form-field">
+                <label for="costOut">Kosten (in €):</label>
+                <input type="number" id="costOut" th:field="*{betrag}" step="0.01" min="0" placeholder="z. B. 12.50">
+                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+            </div>
+
+            <button type="submit">Hinzufügen</button>
+        </form>
+    </div>
+    <div class="tocenter">
+        <button onclick="openModal() ">+ Monatliche Einnahme hinzufügen</button>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+
+            <form method="post" th:object="${festeEinnahme}" th:action="@{/festeEinnahme}">
+                <label for="desc">Einahme: </label>
+                <input type="text" id="desc" th:field="*{desc}" placeholder="z.B. Gehalt">
+                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+
+                <label for="betrag">Betrag:</label>
+                <input type="number" id="betrag" th:field="*{betrag}" step="0.01" min="0">
+                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+
+                <button type="submit">Hinzufügen</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="einnamen-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Einname</th>
+                <th>Betrag</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="einnahme: ${einnahmen}">
+                <td th:text="${einnahme.desc}"></td>
+                <td th:text="${#numbers.formatDecimal(einnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="sum-in">
+            <b>Summe: </b>
+            <span th:text="${#numbers.formatDecimal(summeIn, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+            <span>€ </span>
+        </div>
+    </div>
+
+    <div class="ausgaben-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Ausgabe</th>
+                <th>Kosten</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ausgabe: ${ausgaben}">
+                    <td th:text="${ausgabe.desc}"></td>
+                    <td th:text="${#numbers.formatDecimal(ausgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="sum-out">
+            <b>Summe: </b>
+            <span th:text="${#numbers.formatDecimal(summeOut, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+            <span>€</span>
+        </div>
+    </div>
+    <div class="diff">
+        <b>Differenz: </b>
+        <span th:text="${#numbers.formatDecimal(differenz, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+        <span>€</span>
+    </div>
+
+
+    <script>
+        function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+    </script>
+
+</body>
+</html>
+

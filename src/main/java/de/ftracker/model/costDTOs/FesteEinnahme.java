@@ -1,4 +1,4 @@
-package de.ftracker.model;
+package de.ftracker.model.costDTOs;
 
-public class FesteEinnahme extends Cost{
+public class FesteEinnahme extends Cost {
 }

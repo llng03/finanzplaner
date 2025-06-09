@@ -2,9 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Pots</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <h1>Übersicht</h1>
+
+    <div>
+        <h2>Unverteilt: <span th:text="${undistributed}">0.00</span> €</h2>
+        <button onclick="openDistributeModal()">verteilen</button>
+        <button onclick="openCreatePotModal()">neuen Pot erstellen</button>
+    </div>
+
+<div th:each="pot: ${pots}">
+    <h3 th:text="${pot.name}">Pot Name</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Betrag</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="entry: ${pot.entries}">
+                <td th:text="${entry.date}"></td>
+                <td th:text="${entry.amount}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <b>Summe: <span th:text="${#numbers.formatDecimal(pot.sum(), 1, 'COMMA', 2, 'POINT')}"></span></b>
+</div>
+
+<!--Distribution Popup -->
+<div id="distributeModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="closeDistributeModal()">&times;</span>
+        <!--Fehleranzeige-->
+        <div th:if="${error}" class="error">
+            <p th:text="${error}">Fehlermeldung hier</p>
+        </div>
+
+        <form method="post" action="/pots/distribute">
+            <label for="potName">Verteile an Pot:</label>
+            <select name="potName" id="potName" required>
+                <option th:each="pot: ${pots}" th:text="*{pot.getName()}" th:value="${pot.name}" th:name="${pot.name}"></option>
+            </select>
+            <label for="amount">Betrag: </label>
+            <input type="number" name="amount" id="amount" step="0.01" min="0" required>
+
+            <button type="submit">Verteilen</button>
+        </form>
+    </div>
+</div>
+
+<!--Popup für neuen Pot-->
+<div id="createPotModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="closeCreatePotModal()">&times;</span>
+        <form method="post" action="/pots/new">
+            <label for="potNameNew">Name des neuen Pots: </label>
+            <input type="text" name="name" id="potNameNew" required>
+            <button type="submit">Erstellen</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openDistributeModal() {
+        document.getElementById('distributeModal').classList.remove('hidden');
+    }
+    function openCreatePotModal() {
+        document.getElementById('createPotModal').classList.remove('hidden');
+    }
+    function closeDistributeModal() {
+        document.getElementById('distributeModal').classList.add('hidden');
+    }
+    function closeCreatePotModal() {
+        document.getElementById('createPotModal').classList.add('hidden');
+    }
+</script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const showDistribute = /*[[${showDistributeModal}]]*/ false;
+        if (showDistribute) {
+            openDistributeModal();
+        }
+        /*]]>*/
+    </script>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-package de.ftracker.model;
+package de.ftracker.model.pots;
 
 import java.time.LocalDate;
 

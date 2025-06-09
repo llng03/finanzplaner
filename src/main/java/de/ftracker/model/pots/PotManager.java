@@ -1,12 +1,12 @@
-package de.ftracker.model;
+package de.ftracker.model.pots;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class PotManager {
     private List<BudgetPot> pots = new ArrayList<>();
-    private double undistributedAmount;
+    private double undistributedAmount = 0;
 
 
     public List<BudgetPot> getPots() {
@@ -26,14 +26,19 @@ public class PotManager {
     }
 
     public void distribute(double amount, String potName) {
-
+        distribute(amount, getPot(potName));
     }
 
     public void distribute(double amount, BudgetPot pot) {
+        if(undistributedAmount < amount) {
+            throw new IllegalArgumentException("not enough undistributed amount");
+        }
+        undistributedAmount -= amount;
+        pot.addEntry(LocalDate.now(), amount);
     }
 
     public void addToUndistributed(double amount) {
-
+        undistributedAmount += amount;
     }
 
     public double getUndistributedAmount() {

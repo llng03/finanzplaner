@@ -1,4 +1,4 @@
-package de.ftracker.model;
+package de.ftracker.model.pots;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class BudgetPot {
         this.entries = new ArrayList<>();
     }
 
-    public double getSum() {
+    public double sum() {
         return entries.stream().mapToDouble(e -> e.getAmount()).sum();
     }
 
