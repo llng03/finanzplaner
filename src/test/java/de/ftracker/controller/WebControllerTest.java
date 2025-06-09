@@ -46,4 +46,24 @@ public class WebControllerTest {
                 )));
 
     }
+
+    @Test
+    @DisplayName("festeAusgabeAbschicken updatet Model")
+    void test3() throws Exception {
+        mockMvc.perform(post("/festeAusgabe")
+                .param("desc", "Miete")
+                .param("betrag", "330"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("ausgaben"))
+                .andExpect(model().attribute("ausgaben", hasItem(
+                        allOf(
+                                hasProperty("desc", is("Miete")),
+                                hasProperty("betrag", is(330.0))
+                        )
+                )));
+
+    }
 }

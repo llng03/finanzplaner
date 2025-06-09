@@ -18,11 +18,13 @@ public class WebController {
     private final CostTable ausgaben;
     private final CostTable einnahmen;
     private final CostTable monEinnahmen;
+    private final CostTable monAusgaben;
 
     public WebController() {
         this.ausgaben = new CostTable();
         this.einnahmen = new CostTable();
         this.monEinnahmen = new CostTable();
+        this.monAusgaben = new CostTable();
     }
 
 
@@ -68,6 +70,19 @@ public class WebController {
         return "redirect:/";
     }
 
+    @PostMapping("/festeAusgabe")
+    public String festeAusgabeAbschicken(Model model, @ModelAttribute @Valid FesteAusgabe ausgabe, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("festeAusgabe", ausgabe);
+            prepareModel(model);
+            return "index";
+        }
+        monAusgaben.addCost(ausgabe);
+        model.addAttribute("monAusgaben", monAusgaben.getContent());
+        return "redirect:/";
+
+    }
+
     private void prepareModel(Model model) {
         if(!model.containsAttribute("currMonth")) {
             model.addAttribute("currMonth", LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
@@ -82,6 +97,8 @@ public class WebController {
             model.addAttribute("ausgabe", new Ausgabe());
         if (!model.containsAttribute("festeEinnahme"))
             model.addAttribute("festeEinnahme", new FesteEinnahme());
+        if(!model.containsAttribute("festeAusgabe"))
+            model.addAttribute("festeAusgabe", new FesteAusgabe());
 
         CostTable gesamteEinnahmen = new CostTable();
         for (Cost m : monEinnahmen.getContent()) {
@@ -90,12 +107,19 @@ public class WebController {
         for (Cost e : einnahmen.getContent()) {
             gesamteEinnahmen.addCost(e);
         }
+        CostTable gesamteAusgaben = new CostTable();
+        for (Cost a : monAusgaben.getContent()) {
+            gesamteAusgaben.addCost(a);
+        }
+        for(Cost e: ausgaben.getContent()){
+            gesamteAusgaben.addCost(e);
+        }
 
         model.addAttribute("einnahmen", gesamteEinnahmen.getContent());
-        model.addAttribute("ausgaben", ausgaben.getContent());
+        model.addAttribute("ausgaben", gesamteAusgaben.getContent());
 
         double sumIn = gesamteEinnahmen.sum();
-        double sumOut = ausgaben.sum();
+        double sumOut = gesamteAusgaben.sum();
 
         model.addAttribute("summeIn", sumIn);
         model.addAttribute("summeOut", sumOut);

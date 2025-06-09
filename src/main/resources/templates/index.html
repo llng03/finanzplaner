@@ -42,12 +42,12 @@
         </form>
     </div>
     <div class="tocenter">
-        <button onclick="openModal() ">+ Monatliche Einnahme hinzufügen</button>
+        <button onclick="openModalIn() ">+ Monatliche Einnahme hinzufügen</button>
     </div>
 
-    <div id="modal" class="modal hidden">
+    <div id="modal-in" class="modal hidden">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeModalIn()">&times;</span>
 
             <form method="post" th:object="${festeEinnahme}" th:action="@{/festeEinnahme}">
                 <label for="desc">Einahme: </label>
@@ -58,6 +58,32 @@
                 <input type="number" id="betrag" th:field="*{betrag}" step="0.01" min="0">
                 <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
 
+                <button type="submit">Hinzufügen</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="tocenter">
+        <button onclick="openModalOut() ">+ Monatliche Ausgabe hinzufügen</button>
+    </div>
+
+    <div id="modal-out" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalOut()">&times;</span>
+
+            <form method="post" th:object="${festeAusgabe}" th:action="@{/festeAusgabe}">
+                <label for="desc-out">Ausgabe: </label>
+                <input type="text" id="desc-out" th:field="*{desc}" placeholder="z.B. Miete">
+                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+
+                <label for="betrag-out">Betrag:</label>
+                <input type="number" id="betrag-out" th:field="*{betrag}" step="0.01" min="0">
+                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+
+                <label for="freq">Häufigkeit: </label>
+                <select id="freq" th:field="*{frequency}">
+                    <option th:each="option: ${T(de.ftracker.model.costDTOs.Interval).values()}" th:value="${option}" th:text="${option}">Intervall</option>
+                </select>
                 <button type="submit">Hinzufügen</button>
             </form>
         </div>
@@ -114,12 +140,20 @@
 
 
     <script>
-        function openModal() {
-            document.getElementById('modal').classList.remove('hidden');
+        function openModalIn() {
+            document.getElementById('modal-in').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
+        function closeModalIn() {
+            document.getElementById('modal-in').classList.add('hidden');
+        }
+
+        function openModalOut() {
+            document.getElementById('modal-out').classList.remove('hidden');
+        }
+
+        function closeModalOut() {
+            document.getElementById('modal-out').classList.add('hidden');
         }
     </script>
 
