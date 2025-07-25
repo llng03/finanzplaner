@@ -6,9 +6,12 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <h1 th:text="${currMonth} + ' ' + ${currYear}">this month</h1>
+    <h1 th:text="${currMonthString} + ' ' + ${currYear}">this month</h1>
+    <a href="/pots">Zu den Pots</a>
+    <a th:href="@{/{year}/{month}(year = ${prevMonthsYear}, month=${prevMonth})}">letzter Monat</a>
+    <a th:href="@{/{year}/{month}(year = ${nextMonthsYear}, month=${nextMonth})}">nächster Monat</a>
     <div class="form-container">
-        <form method="post" th:object="${einnahme}" th:action="@{/einnahme}">
+        <form method="post" th:object="${einnahme}" th:action="@{/{currYear}/{currMonth}/einnahme(currYear=${currYear}, currMonth=${currMonth})}">
             <h2>Einnahmen</h2>
             <div class="form-field">
                 <label for="descIn">Einnahme:</label>
@@ -24,7 +27,8 @@
 
             <button type="submit">Hinzufügen</button>
         </form>
-        <form method="post" th:object="${ausgabe}" th:action="@{/ausgabe}">
+
+        <form method="post" th:object="${ausgabe}" th:action="@{/{currYear}/{currMonth}/ausgabe(currYear=${currYear}, currMonth=${currMonth})}">
             <h2>Ausgaben</h2>
             <div class="form-field">
                 <label for="descOut">Ausgabe:</label>
@@ -41,6 +45,7 @@
             <button type="submit">Hinzufügen</button>
         </form>
     </div>
+
     <div class="tocenter">
         <button onclick="openModalIn() ">+ Monatliche Einnahme hinzufügen</button>
     </div>
@@ -49,7 +54,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModalIn()">&times;</span>
 
-            <form method="post" th:object="${festeEinnahme}" th:action="@{/festeEinnahme}">
+            <form method="post" th:object="${festeEinnahme}" th:action="@{/{currYear}/{currMonth}/festeEinnahme(currYear=${currYear}, currMonth=${currMonth})}">
                 <label for="desc">Einahme: </label>
                 <input type="text" id="desc" th:field="*{desc}" placeholder="z.B. Gehalt">
                 <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
@@ -57,6 +62,19 @@
                 <label for="betrag">Betrag:</label>
                 <input type="number" id="betrag" th:field="*{betrag}" step="0.01" min="0">
                 <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+
+                <label for="startMonat">Startmonat:</label>
+                <input type="month" id="startMonat" th:field="*{start}" required>
+
+                <label>
+                    <input type="checkbox" id="endToggle" onchange="toggleEndmonat()" checked>
+                    Kein Endmonat (läuft unbefristet)
+                </label>
+
+                <div id="endmonthSection" style="display: none;">
+                    <label for="endMonth">Endmonat</label>
+                    <input type="month" id="endMonth" th:field="*{endValue}">
+                </div>
 
                 <button type="submit">Hinzufügen</button>
             </form>
@@ -71,7 +89,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModalOut()">&times;</span>
 
-            <form method="post" th:object="${festeAusgabe}" th:action="@{/festeAusgabe}">
+            <form method="post" th:object="${festeAusgabe}" th:action="@{/{currYear}/{currMonth}/festeAusgabe(currYear=${currYear}, currMonth=${currMonth})}">
                 <label for="desc-out">Ausgabe: </label>
                 <input type="text" id="desc-out" th:field="*{desc}" placeholder="z.B. Miete">
                 <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
@@ -79,6 +97,19 @@
                 <label for="betrag-out">Betrag:</label>
                 <input type="number" id="betrag-out" th:field="*{betrag}" step="0.01" min="0">
                 <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+
+                <label for="startMonatOut">Startmonat:</label>
+                <input type="month" id="startMonatOut" th:field="*{start}" required>
+
+                <label>
+                    <input type="checkbox" id="endToggleOut" onchange="toggleEndmonatOut()" checked>
+                    Kein Endmonat (läuft unbefristet)
+                </label>
+
+                <div id="endmonthSectionOut" style="display: none;">
+                    <label for="endMonthOut">Endmonat</label>
+                    <input type="month" id="endMonthOut" th:field="*{endValue}">
+                </div>
 
                 <label for="freq">Häufigkeit: </label>
                 <select id="freq" th:field="*{frequency}">
@@ -88,6 +119,26 @@
             </form>
         </div>
     </div>
+
+    <!--
+
+    <div class="tocenter">
+        <button onclick="openModalPot() ">+ Monatliche Ausgabe hinzufügen</button>
+    </div>
+
+
+    <div id="modal-pot" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalPot()">&times;</span>
+
+            <form method="post" th:object="${festeAusgabe}" th:action="@{/festeAusgabe}">
+                <label for="betrag-out">Betrag:</label>
+                <input type="number" id="betrag-to-distr" step="0.01" min="0">
+                <button type="submit">Hinzufügen</button>
+            </form>
+        </div>
+    </div>
+    -->
 
     <div id="einnamen-table">
         <table>
@@ -155,8 +206,45 @@
         function closeModalOut() {
             document.getElementById('modal-out').classList.add('hidden');
         }
+
+        function toggleEndmonat() {
+            const checkbox = document.getElementById("endToggle");
+            const section = document.getElementById("endmonthSection");
+            if(checkbox.checked) {
+                section.style.display = "none";
+                document.getElementById("endMonat").value = "";
+            } else {
+                section.style.display = "block";
+            }
+            window.addEventListener("DOMContentLoaded", toggleEndmonat);
+        }
+
+        function toggleEndmonatOut() {
+            const checkbox = document.getElementById("endToggleOut");
+            const section = document.getElementById("endmonthSectionOut");
+            if(checkbox.checked) {
+                section.style.display = "none";
+                document.getElementById("endMonatOut").value = "";
+            } else {
+                section.style.display = "block";
+            }
+            window.addEventListener("DOMContentLoaded", toggleEndmonatOut);
+        }
+
+
     </script>
+    <!--
+    <script>
+        function openModalPot() {
+            document.getElementById('modal-pot').classList.remove('hidden');
+        }
+
+        function closeModalPot() {
+            document.getElementById('modal-pot').classList.add('hidden');
+        }
+
+    </script>
+    -->
 
 </body>
 </html>
-

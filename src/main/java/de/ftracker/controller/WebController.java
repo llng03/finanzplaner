@@ -1,128 +1,156 @@
 package de.ftracker.controller;
 
+import de.ftracker.model.CostManager;
+import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.*;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
 
 @Controller
 public class WebController {
-    private final CostTable ausgaben;
-    private final CostTable einnahmen;
-    private final CostTable monEinnahmen;
-    private final CostTable monAusgaben;
+    private final CostManager costManager;
 
-    public WebController() {
-        this.ausgaben = new CostTable();
-        this.einnahmen = new CostTable();
-        this.monEinnahmen = new CostTable();
-        this.monAusgaben = new CostTable();
+    @Autowired
+    public WebController(CostManager costManager) {
+        this.costManager = costManager;
     }
-
 
     @GetMapping("/")
     public String index(Model model) {
-        prepareModel(model);
+        return indexMonth(model, YearMonth.now().getYear(), YearMonth.now().getMonthValue());
+    }
+
+    @GetMapping("/{currYear}/{currMonth}")
+    public String indexMonth(Model model, @PathVariable int currYear, @PathVariable int currMonth) {
+        YearMonth thisYearMonth = YearMonth.of(currYear, currMonth);
+        prepareModel(model, thisYearMonth);
         return "index";
     }
 
-    @PostMapping("/einnahme")
-    public String einnahmeAbschicken(Model model, @ModelAttribute @Valid Einnahme einnahme, BindingResult bindingResult) {
+    @PostMapping("/{currYear}/{currMonth}/einnahme")
+    public String einnahmeAbschicken(Model model, @ModelAttribute @Valid Cost einnahme, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("einnahme", einnahme);
-            prepareModel(model);
+            prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
         }
-        einnahmen.addCost(einnahme);
-        model.addAttribute("einnahmen", einnahmen.getContent());
-        return "redirect:/";
+
+        einnahme.setIncome(true);
+
+        CostTables costTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
+        costTables.addCostToEinnahmen(einnahme);
+        model.addAttribute("einnahmen", costTables.getEinnahmen());
+        return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/ausgabe")
-    public String ausgabeAbschicken(Model model, @ModelAttribute @Valid Ausgabe ausgabe, BindingResult bindingResult) {
+    @PostMapping("/{currYear}/{currMonth}/ausgabe")
+    public String ausgabeAbschicken(Model model, @ModelAttribute @Valid Cost ausgabe, BindingResult bindingResult,  @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("ausgabe", ausgabe);
-            prepareModel(model);
-            return "index";
+            prepareModel(model, YearMonth.of(currYear, currMonth));
+            return "indexMonth";
         }
-        ausgaben.addCost(ausgabe);
-        model.addAttribute("ausgaben", ausgaben.getContent());
-        return "redirect:/";
+
+        ausgabe.setIncome(false);
+
+        CostTables costTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
+        costTables.addCostToAusgaben(ausgabe);
+        model.addAttribute("ausgaben", costTables.getAusgaben());
+        return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/festeEinnahme")
-    public String festeEinnahmeAbschicken(Model model, @ModelAttribute @Valid FesteEinnahme festeEinname, BindingResult bindingResult) {
+    @PostMapping("/{currYear}/{currMonth}/festeEinnahme")
+    public String festeEinnahmeAbschicken(Model model, @ModelAttribute @Valid FixedCost festeEinname, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("festeEinnahme", festeEinname);
-            prepareModel(model);
+            prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
         }
-        monEinnahmen.addCost(festeEinname);
-        model.addAttribute("monEinnahmen", monEinnahmen.getContent());
-        return "redirect:/";
+        costManager.addToFesteEinnahmen(festeEinname);
+        return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/festeAusgabe")
-    public String festeAusgabeAbschicken(Model model, @ModelAttribute @Valid FesteAusgabe ausgabe, BindingResult bindingResult) {
+    @PostMapping("/{currYear}/{currMonth}/festeAusgabe")
+    public String festeAusgabeAbschicken(Model model, @ModelAttribute @Valid FixedCost ausgabe, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("festeAusgabe", ausgabe);
-            prepareModel(model);
+            prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
         }
-        monAusgaben.addCost(ausgabe);
-        model.addAttribute("monAusgaben", monAusgaben.getContent());
-        return "redirect:/";
+        costManager.addToFesteAusgaben(ausgabe);
+        return "redirect:/" + currYear + "/" + currMonth;
 
     }
 
-    private void prepareModel(Model model) {
-        if(!model.containsAttribute("currMonth")) {
-            model.addAttribute("currMonth", LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
+    private void prepareModel(Model model, YearMonth month) {
+        int currMonth = month.getMonth().getValue();
+        int currYear = month.getYear();
+
+        model.addAttribute("currMonthString", month.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
+
+        model.addAttribute("currMonth", currMonth);
+
+        model.addAttribute("currYear", currYear);
+
+        if(currMonth != 1) {
+            model.addAttribute("prevMonth", currMonth - 1);
+            model.addAttribute("prevMonthsYear", currYear);
+        } else {
+            model.addAttribute("prevMonth", 12);
+            model.addAttribute("prevMonthsYear", currYear - 1);
         }
-        if(!model.containsAttribute("currYear")) {
-            model.addAttribute("currYear", LocalDate.now().getYear());
+
+        if(currMonth != 12) {
+            model.addAttribute("nextMonth", currMonth + 1);
+            model.addAttribute("nextMonthsYear", currYear);
+        } else {
+            model.addAttribute("nextMonth", 1);
+            model.addAttribute("nextMonthsYear", currYear + 1);
         }
+
+
         // Fallbacks für leere Felder bei neuem Aufruf oder Fehler
         if (!model.containsAttribute("einnahme"))
-            model.addAttribute("einnahme", new Einnahme());
+            model.addAttribute("einnahme", new Cost());
         if (!model.containsAttribute("ausgabe"))
-            model.addAttribute("ausgabe", new Ausgabe());
+            model.addAttribute("ausgabe", new Cost());
         if (!model.containsAttribute("festeEinnahme"))
-            model.addAttribute("festeEinnahme", new FesteEinnahme());
+            model.addAttribute("festeEinnahme", new FixedCost());
         if(!model.containsAttribute("festeAusgabe"))
-            model.addAttribute("festeAusgabe", new FesteAusgabe());
+            model.addAttribute("festeAusgabe", new FixedCost());
 
-        CostTable gesamteEinnahmen = new CostTable();
-        for (Cost m : monEinnahmen.getContent()) {
-            gesamteEinnahmen.addCost(m);
-        }
-        for (Cost e : einnahmen.getContent()) {
-            gesamteEinnahmen.addCost(e);
-        }
-        CostTable gesamteAusgaben = new CostTable();
-        for (Cost a : monAusgaben.getContent()) {
-            gesamteAusgaben.addCost(a);
-        }
-        for(Cost e: ausgaben.getContent()){
-            gesamteAusgaben.addCost(e);
-        }
+        CostTables costTables = costManager.getTablesOf(month);
 
-        model.addAttribute("einnahmen", gesamteEinnahmen.getContent());
-        model.addAttribute("ausgaben", gesamteAusgaben.getContent());
+        List<Cost> einnahmen = costManager.getMonthsEinnahmen(month);
+        List<Cost> ausgaben = costManager.getMonthsAusgaben(month);
 
-        double sumIn = gesamteEinnahmen.sum();
-        double sumOut = gesamteAusgaben.sum();
+        einnahmen.addAll(costTables.getEinnahmen());
+        ausgaben.addAll(costTables.getAusgaben());
+
+        model.addAttribute("einnahmen", einnahmen);
+        model.addAttribute("ausgaben", ausgaben);
+
+        BigDecimal sumIn = costTables.sumEinnahmen();
+        BigDecimal sumOut = costTables.sumAusgaben();
 
         model.addAttribute("summeIn", sumIn);
         model.addAttribute("summeOut", sumOut);
-        model.addAttribute("differenz", sumIn - sumOut);
+        model.addAttribute("differenz", sumIn.subtract(sumOut));
     }
 }

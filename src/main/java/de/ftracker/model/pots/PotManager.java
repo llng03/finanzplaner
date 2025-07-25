@@ -1,16 +1,24 @@
 package de.ftracker.model.pots;
 
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/*@Service
 public class PotManager {
     private List<BudgetPot> pots = new ArrayList<>();
-    private double undistributedAmount = 0;
+    private BigDecimal undistributedAmount = new BigDecimal(0);
 
 
     public List<BudgetPot> getPots() {
         return pots;
+    }
+
+    public BigDecimal getUndistributedAmount() {
+        return undistributedAmount;
     }
 
     public void addPot(BudgetPot budgetPot) {
@@ -25,23 +33,19 @@ public class PotManager {
 
     }
 
-    public void distribute(double amount, String potName) {
+    public void distribute(BigDecimal amount, String potName) {
         distribute(amount, getPot(potName));
     }
 
-    public void distribute(double amount, BudgetPot pot) {
-        if(undistributedAmount < amount) {
+    public void distribute(BigDecimal amount, BudgetPot pot) {
+        if(undistributedAmount.compareTo(amount) < 0) {
             throw new IllegalArgumentException("not enough undistributed amount");
         }
-        undistributedAmount -= amount;
+        undistributedAmount.subtract(amount);
         pot.addEntry(LocalDate.now(), amount);
     }
 
-    public void addToUndistributed(double amount) {
+    public void addToUndistributed(BigDecimal amount) {
         undistributedAmount += amount;
     }
-
-    public double getUndistributedAmount() {
-        return undistributedAmount;
-    }
-}
+}*/

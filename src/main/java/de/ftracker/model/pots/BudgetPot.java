@@ -1,10 +1,11 @@
 package de.ftracker.model.pots;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BudgetPot {
+/*public class BudgetPot {
     private String name;
     private List<PotEntry> entries;
 
@@ -13,8 +14,10 @@ public class BudgetPot {
         this.entries = new ArrayList<>();
     }
 
-    public double sum() {
-        return entries.stream().mapToDouble(e -> e.getAmount()).sum();
+    public BigDecimal sum() {
+        return entries.stream()
+                .map(e -> e.getAmount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public String getName() {
@@ -25,7 +28,7 @@ public class BudgetPot {
         return entries;
     }
 
-    public void addEntry(LocalDate date, double amount) {
+    public void addEntry(LocalDate date, BigDecimal amount) {
         entries.add(new PotEntry(date, amount));
     }
-}
+}*/

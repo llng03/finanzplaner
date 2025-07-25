@@ -1,4 +1,4 @@
-package de.ftracker.controller;
+/*package de.ftracker.controller;
 
 import de.ftracker.model.pots.PotManager;
 import org.mockito.Mockito;
@@ -9,4 +9,4 @@ public class PotControllerTestConfig {
     public PotManager potManager() {
         return Mockito.mock(PotManager.class);
     }
-}
+}*/

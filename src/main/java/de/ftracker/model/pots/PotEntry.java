@@ -1,21 +1,22 @@
 package de.ftracker.model.pots;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class PotEntry {
+/*public class PotEntry {
     private LocalDate date;
-    private double amount;
+    private BigDecimal amount;
 
-    public PotEntry(LocalDate date, double amount) {
+    public PotEntry(LocalDate date, BigDecimal amount) {
         this.date = date;
         this.amount = amount;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
     public LocalDate getDate() {
         return date;
     }
-}
+}*/
