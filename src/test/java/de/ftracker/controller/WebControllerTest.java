@@ -51,16 +51,16 @@ public class WebControllerTest {
                 .andExpect(view().name("index"));
     }
 
-    /*@Test
+    @Test
     @DisplayName("einnahmeAbschicken updatet Model")
     void test2() throws Exception {
         CostTables fakeTables = new CostTables();
         when(costManager.getTablesOf(any())).thenReturn(fakeTables);
-        mockMvc.perform(post("/einnahme")
+        mockMvc.perform(post("/2025/6/einnahme")
                         .param("desc", "TestEinnahme")
                         .param("betrag", "100.00"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(redirectedUrl("/2025/6"));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
@@ -79,11 +79,11 @@ public class WebControllerTest {
     void test3() throws Exception {
         CostTables fakeTables = new CostTables();
         when(costManager.getTablesOf(any())).thenReturn(fakeTables);
-        mockMvc.perform(post("/ausgabe")
+        mockMvc.perform(post("/2025/6/ausgabe")
                         .param("desc", "TestAusgabe")
                         .param("betrag", "50.00"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(redirectedUrl("/2025/6"));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
@@ -114,11 +114,11 @@ public class WebControllerTest {
             return t;
         });
 
-        mockMvc.perform(post("/festeAusgabe")
+        mockMvc.perform(post("/2025/6/festeAusgabe")
                 .param("desc", "Miete")
                 .param("betrag", "330"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(status().is3xxRedirection())Web
+                .andExpect(redirectedUrl("/2025/6"));
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("ausgaben"))
@@ -129,5 +129,5 @@ public class WebControllerTest {
                         )
                 )));
 
-    }*/
+    }
 }
