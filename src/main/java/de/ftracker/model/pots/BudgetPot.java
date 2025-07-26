@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/*public class BudgetPot {
+public class BudgetPot {
     private String name;
     private List<PotEntry> entries;
 
@@ -31,4 +31,4 @@ import java.util.List;
     public void addEntry(LocalDate date, BigDecimal amount) {
         entries.add(new PotEntry(date, amount));
     }
-}*/
+}

@@ -1,4 +1,4 @@
-/*package de.ftracker.controller;
+package de.ftracker.controller;
 
 import de.ftracker.model.pots.BudgetPot;
 import de.ftracker.model.pots.PotManager;
@@ -24,7 +24,7 @@ public class PotController {
         model.addAttribute("pots", potManager.getPots());
         return "redirect:/pots";
     }
-
+    /*
     @PostMapping("/pots/distribute")
     public String distribute(Model model, @RequestParam("potName") String potName,
                              @RequestParam("amount") double amount) {
@@ -38,7 +38,7 @@ public class PotController {
         }
         model.addAttribute("pots", potManager.getPots());
         return "redirect:/pots";
-    }
+    }*/
 
     private void prepareModel(Model model) {
         if(!model.containsAttribute("pots")) {
@@ -53,4 +53,4 @@ public class PotController {
     }
 
 
-}*/
+}

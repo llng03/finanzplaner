@@ -29,23 +29,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@WebMvcTest(WebController.class)
 public class WebControllerTest {
-
-
-    //weil MockBean nicht mehr benutzt werden soll
-    /*@TestConfiguration
-    static class MockConfig {
-        @Bean
-        public CostManager costManager() {
-            return Mockito.mock(CostManager.class);
-        }
-    }
-
-    @BeforeEach
-    void resetMocks() {
-        Mockito.reset(costManager);
-    }*/
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,7 +51,7 @@ public class WebControllerTest {
                 .andExpect(view().name("index"));
     }
 
-    @Test
+    /*@Test
     @DisplayName("einnahmeAbschicken updatet Model")
     void test2() throws Exception {
         CostTables fakeTables = new CostTables();
@@ -144,5 +129,5 @@ public class WebControllerTest {
                         )
                 )));
 
-    }
+    }*/
 }

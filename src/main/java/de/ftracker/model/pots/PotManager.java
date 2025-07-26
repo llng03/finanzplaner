@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/*@Service
+@Service
 public class PotManager {
     private List<BudgetPot> pots = new ArrayList<>();
     private BigDecimal undistributedAmount = new BigDecimal(0);
@@ -46,6 +46,6 @@ public class PotManager {
     }
 
     public void addToUndistributed(BigDecimal amount) {
-        undistributedAmount += amount;
+        undistributedAmount.add(amount);
     }
-}*/
+}

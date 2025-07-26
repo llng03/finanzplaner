@@ -3,7 +3,7 @@ package de.ftracker.model.pots;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/*public class PotEntry {
+public class PotEntry {
     private LocalDate date;
     private BigDecimal amount;
 
@@ -19,4 +19,4 @@ import java.time.LocalDate;
     public LocalDate getDate() {
         return date;
     }
-}*/
+}
