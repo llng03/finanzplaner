@@ -2,6 +2,7 @@ package de.ftracker.controller;
 
 //import de.ftracker.model.pots.BudgetPot;
 //import de.ftracker.model.pots.PotManager;
+import de.ftracker.model.pots.BudgetPot;
 import de.ftracker.model.pots.PotManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,10 +44,10 @@ public class PotControllerTest {
 
     }
 
-    /*@Test
+    @Test
     @DisplayName("createNewPotRedirectsToPots")
     void test2() throws Exception{
-        mvc.perform(post("pots/new").param("name", "chess"))
+        mvc.perform(post("/pots/new").param("name", "chess"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/pots"));
         verify(potManager).addPot(any(BudgetPot.class));
@@ -60,6 +61,9 @@ public class PotControllerTest {
                 .param("amount", "100"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/pots"));
-        verify(potManager).distribute(100, "technik");
-    }*/
+        verify(potManager).distribute(
+                argThat(amount -> amount.compareTo(BigDecimal.valueOf(100)) == 0),
+                eq("technik")
+        );
+    }
 }

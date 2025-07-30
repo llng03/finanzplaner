@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
+
 @Controller
 public class PotController {
     private final PotManager potManager;
@@ -31,12 +33,12 @@ public class PotController {
         model.addAttribute("pots", potManager.getPots());
         return "redirect:/pots";
     }
-    /*
+
     @PostMapping("/pots/distribute")
     public String distribute(Model model, @RequestParam("potName") String potName,
                              @RequestParam("amount") double amount) {
         try {
-            potManager.distribute(amount, potName);
+            potManager.distribute(BigDecimal.valueOf(amount), potName);
         } catch(IllegalArgumentException e) {
             model.addAttribute("showDistributeModal", true);
             model.addAttribute("error", "Es wurde eine höhere Summe verteilt, als vorhanden ist :c");
@@ -45,7 +47,7 @@ public class PotController {
         }
         model.addAttribute("pots", potManager.getPots());
         return "redirect:/pots";
-    }*/
+    }
 
     private void prepareModel(Model model) {
         model.addAttribute("pots", potManager.getPots());
