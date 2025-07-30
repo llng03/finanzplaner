@@ -2,6 +2,7 @@ package de.ftracker.model;
 
 import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
+import de.ftracker.model.pots.PotManager;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -46,6 +47,15 @@ public class CostTables {
 
     public void addCostToAusgaben(Cost cost){
         this.ausgaben.add(cost);
+    }
+
+    public void addCostToAusgaben(String name, BigDecimal betrag) {
+        addCostToAusgaben(new Cost(name, betrag));
+    }
+
+    public void addToPots(PotManager potManger, BigDecimal amount) {
+        addCostToAusgaben("auf Pots zu Verteilen", amount);
+        potManger.addToUndistributed(amount);
     }
 
     public BigDecimal sumEinnahmen() {

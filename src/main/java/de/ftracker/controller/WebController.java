@@ -3,15 +3,13 @@ package de.ftracker.controller;
 import de.ftracker.model.CostManager;
 import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.*;
+import de.ftracker.model.pots.PotManager;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,10 +23,12 @@ import java.util.Locale;
 @Controller
 public class WebController {
     private final CostManager costManager;
+    private final PotManager potManager;
 
     @Autowired
-    public WebController(CostManager costManager) {
+    public WebController(CostManager costManager, PotManager potManager) {
         this.costManager = costManager;
+        this.potManager = potManager;
     }
 
     @GetMapping("/")
@@ -96,6 +96,14 @@ public class WebController {
         costManager.addToFesteAusgaben(ausgabe);
         return "redirect:/" + currYear + "/" + currMonth;
 
+    }
+
+    @PostMapping("/{currYear}/{currMonth}/toPots")
+    public String addToPots(Model model, @RequestParam double amount, @PathVariable int currYear, @PathVariable int currMonth) {
+        System.out.println("WebController potManager hash: " + System.identityHashCode(potManager));
+        CostTables thisTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
+        thisTables.addToPots(potManager, new BigDecimal(amount));
+        return "redirect:/" + currYear + "/" + currMonth;
     }
 
     private void prepareModel(Model model, YearMonth month) {

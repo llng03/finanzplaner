@@ -3,6 +3,7 @@ package de.ftracker.controller;
 import de.ftracker.model.CostManager;
 import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.FixedCost;
+import de.ftracker.model.pots.PotManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,7 +38,8 @@ public class WebControllerTest {
     @MockitoBean
     private CostManager costManager;
 
-
+    @MockitoBean
+    private PotManager potManager;
 
     @Test
     @DisplayName("index lädt mit initalen attributen")
@@ -117,7 +118,7 @@ public class WebControllerTest {
         mockMvc.perform(post("/2025/6/festeAusgabe")
                 .param("desc", "Miete")
                 .param("betrag", "330"))
-                .andExpect(status().is3xxRedirection())Web
+                .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/2025/6"));
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())

@@ -2,6 +2,7 @@ package de.ftracker.controller;
 
 import de.ftracker.model.pots.BudgetPot;
 import de.ftracker.model.pots.PotManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class PotController {
-    private final PotManager potManager = new PotManager();
+    private final PotManager potManager;
+
+    @Autowired
+    public PotController(PotManager potManager) {
+        this.potManager = potManager;
+    }
 
     @GetMapping("/pots")
     public String pots(Model model) {
@@ -20,6 +26,7 @@ public class PotController {
 
     @PostMapping("/pots/new")
     public String createNewPot(Model model, @RequestParam("name") String newPotName) {
+        System.out.println("PotController potManager hash: " + System.identityHashCode(potManager));
         potManager.addPot(new BudgetPot(newPotName));
         model.addAttribute("pots", potManager.getPots());
         return "redirect:/pots";
@@ -41,15 +48,9 @@ public class PotController {
     }*/
 
     private void prepareModel(Model model) {
-        if(!model.containsAttribute("pots")) {
-            model.addAttribute("pots", potManager.getPots());
-        }
-        if(!model.containsAttribute("undistributed")) {
-            //nur zu testing-zwecken!!:
-            //manager.addToUndistributed(500);
-            //
-            model.addAttribute("undistributed", potManager.getUndistributedAmount());
-        }
+        model.addAttribute("pots", potManager.getPots());
+        model.addAttribute("undistributed", potManager.getUndistributed());
+
     }
 
 

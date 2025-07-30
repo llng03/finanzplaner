@@ -120,6 +120,23 @@
         </div>
     </div>
 
+    <div class="tocenter">
+        <button onclick="openModalToPots() ">Geld auf Pots verteilen</button>
+    </div>
+
+    <div id = "modal-to-pots" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalToPots()">&times;</span>
+            <form method="post" th:action="@{/{currYear}/{currMonth}/toPots (currYear=${currYear}, currMonth=${currMonth})}">
+                <label for="money-amount">Betrag: </label>
+                <input type="number" id="money-amount" name="amount">
+
+                <button type="submit">Abschicken</button>
+            </form>
+
+        </div>
+    </div>
+
     <!--
 
     <div class="tocenter">
@@ -205,6 +222,14 @@
 
         function closeModalOut() {
             document.getElementById('modal-out').classList.add('hidden');
+        }
+
+        function openModalToPots() {
+            document.getElementById('modal-to-pots').classList.remove('hidden');
+        }
+
+        function closeModalToPots() {
+            document.getElementById('modal-to-pots').classList.add('hidden');
         }
 
         function toggleEndmonat() {

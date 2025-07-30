@@ -10,15 +10,15 @@ import java.util.List;
 @Service
 public class PotManager {
     private List<BudgetPot> pots = new ArrayList<>();
-    private BigDecimal undistributedAmount = new BigDecimal(0);
+    private BigDecimal undistributed = new BigDecimal(0);
 
 
     public List<BudgetPot> getPots() {
         return pots;
     }
 
-    public BigDecimal getUndistributedAmount() {
-        return undistributedAmount;
+    public BigDecimal getUndistributed() {
+        return undistributed;
     }
 
     public void addPot(BudgetPot budgetPot) {
@@ -38,14 +38,14 @@ public class PotManager {
     }
 
     public void distribute(BigDecimal amount, BudgetPot pot) {
-        if(undistributedAmount.compareTo(amount) < 0) {
+        if(undistributed.compareTo(amount) < 0) {
             throw new IllegalArgumentException("not enough undistributed amount");
         }
-        undistributedAmount.subtract(amount);
+        this.undistributed = undistributed.subtract(amount);
         pot.addEntry(LocalDate.now(), amount);
     }
 
     public void addToUndistributed(BigDecimal amount) {
-        undistributedAmount.add(amount);
+        this.undistributed = undistributed.add(amount);
     }
 }

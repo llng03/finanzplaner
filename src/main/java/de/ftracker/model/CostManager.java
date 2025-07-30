@@ -2,8 +2,10 @@ package de.ftracker.model;
 
 import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
+import de.ftracker.model.pots.PotManager;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;

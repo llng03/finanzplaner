@@ -11,8 +11,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -28,6 +32,9 @@ public class PotControllerTest {
     @Test
     @DisplayName("/pots wird erreicht")
     void test1() throws Exception{
+        when(potManager.getPots()).thenReturn(List.of());
+        when(potManager.getUndistributed()).thenReturn(BigDecimal.ZERO);
+
         mvc.perform(get("/pots"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pots"))
