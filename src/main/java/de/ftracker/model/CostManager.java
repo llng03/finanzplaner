@@ -96,4 +96,20 @@ public class CostManager {
                 cost.getDesc().equals(ausgabe) &&
                 cost.getStart().equals(start));
     }
+
+    public BigDecimal getThisMonthsEinnahmenSum(YearMonth month) {
+        List<Cost> einnahmen = getMonthsEinnahmen(month);
+        einnahmen.addAll(getTablesOf(month).getEinnahmen());
+        return einnahmen.stream()
+                .map(e -> e.getBetrag())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getThisMonthsAusgabenSum(YearMonth month) {
+        List<Cost> ausgaben = getMonthsAusgaben(month);
+        ausgaben.addAll(getTablesOf(month).getAusgaben());
+        return ausgaben.stream()
+                .map(e -> e.getBetrag())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

@@ -172,8 +172,8 @@ public class WebController {
         model.addAttribute("einnahmen", einnahmen);
         model.addAttribute("ausgaben", ausgaben);
 
-        BigDecimal sumIn = costTables.sumEinnahmen();
-        BigDecimal sumOut = costTables.sumAusgaben();
+        BigDecimal sumIn = costManager.getThisMonthsEinnahmenSum(month);
+        BigDecimal sumOut = costManager.getThisMonthsAusgabenSum(month);
 
         model.addAttribute("summeIn", sumIn);
         model.addAttribute("summeOut", sumOut);
