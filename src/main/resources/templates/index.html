@@ -124,12 +124,27 @@
         <button onclick="openModalToPots() ">Geld auf Pots verteilen</button>
     </div>
 
+
+
     <div id = "modal-to-pots" class="modal hidden">
         <div class="modal-content">
             <span class="close" onclick="closeModalToPots()">&times;</span>
             <form method="post" th:action="@{/{currYear}/{currMonth}/toPots (currYear=${currYear}, currMonth=${currMonth})}">
                 <label for="money-amount">Betrag: </label>
                 <input type="number" id="money-amount" name="amount">
+
+                <!--<label>
+                    <input type="checkbox" id ="togglePotSelection" onchange="togglePotSelection()" checked>
+                    Geld wird nicht auf speziellen Pot verteilt
+                </label>-->
+
+                <div id ="potSelection">
+                    <label for="potSelect">Pot: </label>
+                    <select name="potSelect" id="potSelect">
+                        <option value="">-- kein Pot --</option>
+                        <option th:each="pot: ${pots}" th:text="*{pot.getName()}" th:value="${pot.name}" th:name="${pot.name}"></option>
+                    </select>
+                </div>
 
                 <button type="submit">Abschicken</button>
             </form>
@@ -235,27 +250,40 @@
         function toggleEndmonat() {
             const checkbox = document.getElementById("endToggle");
             const section = document.getElementById("endmonthSection");
-            if(checkbox.checked) {
+            if (checkbox.checked) {
                 section.style.display = "none";
-                document.getElementById("endMonat").value = "";
+                document.getElementById("endMonth").value = "";
             } else {
                 section.style.display = "block";
             }
-            window.addEventListener("DOMContentLoaded", toggleEndmonat);
         }
 
         function toggleEndmonatOut() {
             const checkbox = document.getElementById("endToggleOut");
             const section = document.getElementById("endmonthSectionOut");
-            if(checkbox.checked) {
+            if (checkbox.checked) {
                 section.style.display = "none";
-                document.getElementById("endMonatOut").value = "";
+                document.getElementById("endMonthOut").value = "";
             } else {
                 section.style.display = "block";
             }
-            window.addEventListener("DOMContentLoaded", toggleEndmonatOut);
         }
 
+        function togglePotSelection() {
+            const checkbox = document.getElementById("togglePotSelection");
+            const section = document.getElementById("potSelection");
+            if (checkbox.checked) {
+                section.style.display = "none";
+                document.getElementById("potSelect").value = "";
+            } else {
+                section.style.display = "block";
+            }
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            toggleEndmonat();
+            toggleEndmonatOut();
+            togglePotSelection();
+        });
 
     </script>
     <!--

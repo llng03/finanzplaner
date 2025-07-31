@@ -12,9 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.List;
@@ -99,10 +96,15 @@ public class WebController {
     }
 
     @PostMapping("/{currYear}/{currMonth}/toPots")
-    public String addToPots(Model model, @RequestParam double amount, @PathVariable int currYear, @PathVariable int currMonth) {
-        System.out.println("WebController potManager hash: " + System.identityHashCode(potManager));
+    public String addToPots(Model model, @RequestParam double amount, @RequestParam String potSelect, @PathVariable int currYear, @PathVariable int currMonth) {
+        BigDecimal amountD = new BigDecimal(amount);
         CostTables thisTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
-        thisTables.addToPots(potManager, new BigDecimal(amount));
+
+        if(potSelect.equals("")){
+            thisTables.addToPots(potManager, amountD);
+        } else {
+            thisTables.addToPot(potManager, amountD, potSelect);
+        }
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
@@ -131,6 +133,8 @@ public class WebController {
             model.addAttribute("nextMonth", 1);
             model.addAttribute("nextMonthsYear", currYear + 1);
         }
+
+        model.addAttribute("pots", potManager.getPots());
 
 
         // Fallbacks für leere Felder bei neuem Aufruf oder Fehler
