@@ -135,6 +135,8 @@ public class WebController {
         }
 
         model.addAttribute("pots", potManager.getPots());
+        model.addAttribute("festeEinnahmen", costManager.getFesteEinnahmen());
+        model.addAttribute("festeAusgaben", costManager.getFesteAusgaben());
 
 
         // Fallbacks für leere Felder bei neuem Aufruf oder Fehler

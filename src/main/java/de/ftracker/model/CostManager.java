@@ -23,6 +23,14 @@ public class CostManager {
         return tables.computeIfAbsent(yearMonth, CostTables::new);
     }
 
+    public List<FixedCost> getFesteAusgaben() {
+        return festeAusgaben;
+    }
+
+    public List<FixedCost> getFesteEinnahmen() {
+        return festeEinnahmen;
+    }
+
     public List<Cost> getMonthsAusgaben(YearMonth month) {
         List<FixedCost> fixedCosts = festeAusgaben.stream()
                 .filter(fc -> !fc.getStart().isAfter(month))
