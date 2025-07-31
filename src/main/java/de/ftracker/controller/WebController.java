@@ -108,6 +108,18 @@ public class WebController {
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
+    @PostMapping("/{currYear}/{currMonth}/deleteFixedEinnahme")
+    public String deleteFixedEinnahme(Model model, @RequestParam String desc, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
+        costManager.deleteFromFesteEinnahmen(desc, start);
+        return "redirect:/" + currYear + "/" + currMonth;
+    }
+
+    @PostMapping("/{currYear}/{currMonth}/deleteFixedAusgabe")
+    public String deleteFixedAusgabe(Model model, @RequestParam String desc, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
+        costManager.deleteFromFesteAusgaben(desc, start);
+        return "redirect:/" + currYear + "/" + currMonth;
+    }
+
     private void prepareModel(Model model, YearMonth month) {
         int currMonth = month.getMonth().getValue();
         int currYear = month.getYear();

@@ -168,6 +168,7 @@
                     <th>Frequenz</th>
                     <th>Startmonat</th>
                     <th>Endmonat</th>
+                    <th>-</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -177,6 +178,13 @@
                     <td th:text="${fEinnahme.frequency}">monaltich</td>
                     <td th:text="${fEinnahme.start}"></td>
                     <td th:text="${fEinnahme.endValue != null ? fEinnahme.endValue : '-'}">-</td>
+                    <td>
+                        <form method="post" th:action="@{/{year}/{month}/deleteFixedEinnahme(year=${currYear}, month=${currMonth})}">
+                            <input type="hidden" name="desc" th:value="${fEinnahme.desc}">
+                            <input type="hidden" name="start" th:value="${fEinnahme.start}">
+                            <button type="submit">-</button>
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -189,6 +197,7 @@
                     <th>Frequenz</th>
                     <th>Startmonat</th>
                     <th>Endmonat</th>
+                    <th>-</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -198,6 +207,13 @@
                     <td th:text="${fAusgabe.frequency}">monaltich</td>
                     <td th:text="${fAusgabe.start}"></td>
                     <td th:text="${fAusgabe.endValue != null ? fAusgabe.endValue: '-'}">-</td>
+                    <td>
+                        <form method="post" th:action="@{/{year}/{month}/deleteFixedAusgabe(year=${currYear}, month=${currMonth})}">
+                            <input type="hidden" name="desc" th:value="${fAusgabe.desc}">
+                            <input type="hidden" name="start" th:value="${fAusgabe.start}">
+                            <button type="submit">-</button>
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             </table>

@@ -76,4 +76,24 @@ public class CostManager {
     public void addToFesteAusgaben(FixedCost ausgaben) {
         festeAusgaben.add(ausgaben);
     }
+
+    public void deleteFromFesteEinnahmen(FixedCost einnahme) {
+        festeEinnahmen.remove(einnahme);
+    }
+
+    public void deleteFromFesteEinnahmen(String einnahme, YearMonth start) {
+        festeEinnahmen.removeIf(cost ->
+                cost.getDesc().equals(einnahme) &&
+                        cost.getStart().equals(start));
+    }
+
+    public void deleteFromFesteAusgaben(FixedCost ausgabe) {
+        festeAusgaben.remove(ausgabe);
+    }
+
+    public void deleteFromFesteAusgaben(String ausgabe, YearMonth start) {
+        festeAusgaben.removeIf(cost ->
+                cost.getDesc().equals(ausgabe) &&
+                cost.getStart().equals(start));
+    }
 }
