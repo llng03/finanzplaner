@@ -48,4 +48,10 @@ public class PotManager {
     public void addToUndistributed(BigDecimal amount) {
         this.undistributed = undistributed.add(amount);
     }
+
+    public void deletePotByName(String string) {
+        BudgetPot pot = getPot(string);
+        pots.remove(pot);
+        addToUndistributed(pot.sum());
+    }
 }

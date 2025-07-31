@@ -16,6 +16,10 @@
 
 <div th:each="pot: ${pots}">
     <h3 th:text="${pot.name}">Pot Name</h3>
+    <form method="post" th:action="@{/pots/deletePot}">
+        <input type="hidden" name="potName" th:value="${pot.name}">
+        <button type="submit">-️</button>
+    </form>
     <table>
         <thead>
             <tr>

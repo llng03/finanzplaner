@@ -28,7 +28,6 @@ public class PotController {
 
     @PostMapping("/pots/new")
     public String createNewPot(Model model, @RequestParam("name") String newPotName) {
-        System.out.println("PotController potManager hash: " + System.identityHashCode(potManager));
         potManager.addPot(new BudgetPot(newPotName));
         model.addAttribute("pots", potManager.getPots());
         return "redirect:/pots";
@@ -46,6 +45,12 @@ public class PotController {
             return "pots";
         }
         model.addAttribute("pots", potManager.getPots());
+        return "redirect:/pots";
+    }
+
+    @PostMapping("/pots/deletePot")
+    public String deletePot(Model model, @RequestParam String potName) {
+        potManager.deletePotByName(potName);
         return "redirect:/pots";
     }
 
