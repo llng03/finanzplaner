@@ -68,6 +68,7 @@ public class PotController {
     private void prepareModel(Model model, YearMonth curr) {
         model.addAttribute("pots", potManager.getPots());
         model.addAttribute("undistributed", potManager.getUndistributed());
+        model.addAttribute("sumAll", potManager.getTotal());
         for(BudgetPot pot: potManager.getPots()) {
             if(pot instanceof PotForRegularExp) {
                 ((PotForRegularExp) pot).update(curr);

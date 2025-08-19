@@ -54,4 +54,12 @@ public class PotManager {
         pots.remove(pot);
         addToUndistributed(pot.sum());
     }
+
+    public BigDecimal getTotal() {
+        return undistributed.add(sumAllPots());
+    }
+
+    private BigDecimal sumAllPots() {
+        return pots.stream().map(BudgetPot::sum).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
