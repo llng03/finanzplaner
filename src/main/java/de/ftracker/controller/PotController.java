@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 
@@ -54,6 +55,13 @@ public class PotController {
     @PostMapping("/pots/deletePot")
     public String deletePot(Model model, @RequestParam String potName) {
         potManager.deletePotByName(potName);
+        return "redirect:/pots";
+    }
+
+    @PostMapping("/pots/pay")
+    public String pay(Model model, @RequestParam("potName") String potName, @RequestParam("payAmount") double payAmount) {
+        BudgetPot pot = potManager.getPot(potName);
+        pot.pay(LocalDate.now(), new BigDecimal(payAmount));
         return "redirect:/pots";
     }
 

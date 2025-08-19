@@ -20,6 +20,22 @@
         <input type="hidden" name="potName" th:value="${pot.name}">
         <button type="submit">-️</button>
     </form>
+    <button onclick="openPayModal()">Geld herausnehmen</button>
+    <div id="payModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closePayModal()">x</span>
+            <!--Fehleranzeige-->
+            <div th:if="${error}" class="error">
+                <p th:text="${error}">Fehlermeldung hier</p>
+            </div>
+            <form method="post" action="/pots/pay">
+                <input type="hidden" name="potName" th:value="${pot.name}">
+                <label for="payAmount">Betrag</label>
+                <input type="number" name="payAmount" id="payAmount" step="0.01" min="0" required>
+                <button type="submit">Bezahlen</button>
+            </form>
+        </div>
+    </div>
     <table>
         <thead>
             <tr>
@@ -83,6 +99,12 @@
     }
     function closeCreatePotModal() {
         document.getElementById('createPotModal').classList.add('hidden');
+    }
+    function openPayModal() {
+        document.getElementById('payModal').classList.remove('hidden');
+    }
+    function closePayModal() {
+        document.getElementById('payModal').classList.add('hidden');
     }
 </script>
 

@@ -1,7 +1,6 @@
 package de.ftracker.model.pots;
 
 import de.ftracker.model.costDTOs.Interval;
-import de.ftracker.model.costDTOs.IntervalCount;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

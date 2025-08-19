@@ -3,8 +3,7 @@ package de.ftracker.model;
 import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
 import de.ftracker.model.costDTOs.Interval;
-import de.ftracker.model.costDTOs.IntervalCount;
-import de.ftracker.model.pots.PotManager;
+import de.ftracker.utils.IntervalCount;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
