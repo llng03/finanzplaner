@@ -39,6 +39,7 @@ public class FixedCost extends Cost{
         this.end = Optional.ofNullable(end);
     }
 
+
     public Interval getFrequency() {
         return frequency;
     }

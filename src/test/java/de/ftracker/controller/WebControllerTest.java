@@ -2,6 +2,7 @@ package de.ftracker.controller;
 
 import de.ftracker.model.CostManager;
 import de.ftracker.model.CostTables;
+import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
 import de.ftracker.model.pots.PotManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,17 +36,30 @@ public class WebControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    //hier macht der mock Probleme cweil der Aufruf der Methode getMonthsEinnahmen null zurückgibt weil costManager gemockt...
     @MockitoBean
     private CostManager costManager;
 
     @MockitoBean
     private PotManager potManager;
 
+    @BeforeEach
+    void setupStubs() {
+        // Erzeuge ein leeres CostTables-Objekt
+        CostTables fakeTables = new CostTables();
+
+        // Stub für alle Tests
+        when(costManager.getTablesOf(any(YearMonth.class))).thenReturn(fakeTables);
+        when(costManager.getMonthsEinnahmen(any(YearMonth.class))).thenReturn(new ArrayList<>());
+        when(costManager.getMonthsAusgaben(any(YearMonth.class))).thenReturn(new ArrayList<>());
+        when(costManager.getThisMonthsEinnahmenSum(any(YearMonth.class))).thenCallRealMethod();
+        when(costManager.getThisMonthsAusgabenSum(any(YearMonth.class))).thenCallRealMethod();
+    }
+
     @Test
     @DisplayName("index lädt mit initalen attributen")
     void test1() throws Exception {
-        CostTables fakeTables = new CostTables();
-        when(costManager.getTablesOf(any(YearMonth.class))).thenReturn(fakeTables);
+
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("einnahme", "ausgabe", "einnahmen", "ausgaben", "summeIn", "summeOut", "differenz"))
@@ -55,8 +69,7 @@ public class WebControllerTest {
     @Test
     @DisplayName("einnahmeAbschicken updatet Model")
     void test2() throws Exception {
-        CostTables fakeTables = new CostTables();
-        when(costManager.getTablesOf(any())).thenReturn(fakeTables);
+
         mockMvc.perform(post("/2025/6/einnahme")
                         .param("desc", "TestEinnahme")
                         .param("betrag", "100.00"))
@@ -78,8 +91,7 @@ public class WebControllerTest {
     @Test
     @DisplayName("ausgabeAbschicken updatet das Model")
     void test3() throws Exception {
-        CostTables fakeTables = new CostTables();
-        when(costManager.getTablesOf(any())).thenReturn(fakeTables);
+
         mockMvc.perform(post("/2025/6/ausgabe")
                         .param("desc", "TestAusgabe")
                         .param("betrag", "50.00"))

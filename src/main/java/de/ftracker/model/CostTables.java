@@ -37,6 +37,8 @@ public class CostTables {
         return yearMonth;
     }
 
+    public void setEinnahmen(List<Cost> einnahmen) {this.einnahmen = einnahmen;}
+
     public void setAusgaben(List<Cost> ausgaben) {
         this.ausgaben = ausgaben;
     }
@@ -77,5 +79,4 @@ public class CostTables {
                 .map(e -> e.getBetrag())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 }

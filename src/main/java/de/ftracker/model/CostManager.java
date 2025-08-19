@@ -2,10 +2,12 @@ package de.ftracker.model;
 
 import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
+import de.ftracker.model.costDTOs.Interval;
 import de.ftracker.model.pots.PotManager;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,28 +55,29 @@ public class CostManager {
         return einnahmenUndAusgabenM;
     }
 
-    /*private List<Cost> getMonthlyCost(List<FixedCost> fixedCosts, YearMonth month) {
-        List<Cost> monthlyAusgaben = new ArrayList<>();
-        List<Cost> = getApplicableFixedCosts()
-        for(FixedCost fixedCost : fixedCosts) {
-            double monthlyBetrag;
-            switch(fixedCost.getFrequency()) {
-                case ANNUAL: monthlyBetrag = fixedCost.getBetrag()/12;
-                case SEMI_ANNUAL: monthlyBetrag = fixedCost.getBetrag()/6;
-                case QUARTERLY: monthlyBetrag = fixedCost.getBetrag()/4;
-                default: monthlyBetrag = fixedCost.getBetrag();
-            }
-            monthlyAusgaben.add(new Cost(fixedCost.getDesc(), monthlyBetrag));
+    private BigDecimal getMonthlyCost(FixedCost ausgabe) {
+        BigDecimal monthlyCost;
+        switch(ausgabe.getFrequency())
+        {
+            case ANNUAL -> monthlyCost = ausgabe.getBetrag().divide(BigDecimal.valueOf(12), 2, RoundingMode.CEILING);
+            case SEMI_ANNUAL -> monthlyCost = ausgabe.getBetrag().divide(BigDecimal.valueOf(6), 2, RoundingMode.CEILING);
+            case QUARTERLY -> monthlyCost = ausgabe.getBetrag().divide(BigDecimal.valueOf(3), 2, RoundingMode.CEILING);
+            default ->  monthlyCost = ausgabe.getBetrag();
         }
-        return monthlyAusgaben;
-    }*/
+
+        return monthlyCost;
+    }
 
     public void addToFesteEinnahmen(FixedCost einnahme) {
         festeEinnahmen.add(einnahme);
     }
 
-    public void addToFesteAusgaben(FixedCost ausgaben) {
-        festeAusgaben.add(ausgaben);
+    public void addToFesteAusgaben(FixedCost ausgabe) {
+        if(ausgabe.getFrequency() == Interval.MONTHLY) {
+            festeAusgaben.add(ausgabe);
+        } else {
+            festeAusgaben.add(new FixedCost(ausgabe.getDesc(), getMonthlyCost(ausgabe), Interval.MONTHLY, ausgabe.getStart(), ausgabe.getEndValue()));
+        }
     }
 
     public void deleteFromFesteEinnahmen(FixedCost einnahme) {
@@ -101,7 +104,7 @@ public class CostManager {
         List<Cost> einnahmen = getMonthsEinnahmen(month);
         einnahmen.addAll(getTablesOf(month).getEinnahmen());
         return einnahmen.stream()
-                .map(e -> e.getBetrag())
+                .map(Cost::getBetrag)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -109,7 +112,7 @@ public class CostManager {
         List<Cost> ausgaben = getMonthsAusgaben(month);
         ausgaben.addAll(getTablesOf(month).getAusgaben());
         return ausgaben.stream()
-                .map(e -> e.getBetrag())
+                .map(Cost::getBetrag)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
