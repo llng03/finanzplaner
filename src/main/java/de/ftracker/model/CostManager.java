@@ -3,6 +3,7 @@ package de.ftracker.model;
 import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
 import de.ftracker.model.costDTOs.Interval;
+import de.ftracker.model.costDTOs.IntervalCount;
 import de.ftracker.model.pots.PotManager;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +43,9 @@ public class CostManager {
     }
 
     public List<Cost> getMonthsEinnahmen(YearMonth month) {
-        List<FixedCost> fixedCosts = festeEinnahmen.stream()
+        return festeEinnahmen.stream()
                 .filter(fc -> !fc.getStart().isAfter(month))
-                .filter(fc -> fc.getEnd().map(end -> !end.isBefore(month)).orElse(true))
-                .collect(Collectors.toList());
-        return new ArrayList<>(fixedCosts);
+                .filter(fc -> fc.getEnd().map(end -> !end.isBefore(month)).orElse(true)).collect(Collectors.toList());
     }
 
     public List<Cost> getApplicableFixedCosts(YearMonth month) {
@@ -56,16 +55,8 @@ public class CostManager {
     }
 
     private BigDecimal getMonthlyCost(FixedCost ausgabe) {
-        BigDecimal monthlyCost;
-        switch(ausgabe.getFrequency())
-        {
-            case ANNUAL -> monthlyCost = ausgabe.getBetrag().divide(BigDecimal.valueOf(12), 2, RoundingMode.CEILING);
-            case SEMI_ANNUAL -> monthlyCost = ausgabe.getBetrag().divide(BigDecimal.valueOf(6), 2, RoundingMode.CEILING);
-            case QUARTERLY -> monthlyCost = ausgabe.getBetrag().divide(BigDecimal.valueOf(3), 2, RoundingMode.CEILING);
-            default ->  monthlyCost = ausgabe.getBetrag();
-        }
 
-        return monthlyCost;
+        return ausgabe.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(ausgabe.getFrequency())), 2, RoundingMode.CEILING);
     }
 
     public void addToFesteEinnahmen(FixedCost einnahme) {
@@ -76,6 +67,7 @@ public class CostManager {
         if(ausgabe.getFrequency() == Interval.MONTHLY) {
             festeAusgaben.add(ausgabe);
         } else {
+
             festeAusgaben.add(new FixedCost(ausgabe.getDesc(), getMonthlyCost(ausgabe), Interval.MONTHLY, ausgabe.getStart(), ausgabe.getEndValue()));
         }
     }

@@ -3,6 +3,8 @@ package de.ftracker.controller;
 import de.ftracker.model.CostManager;
 import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.*;
+import de.ftracker.model.pots.BudgetPot;
+import de.ftracker.model.pots.PotForRegularExp;
 import de.ftracker.model.pots.PotManager;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +91,9 @@ public class WebController {
             model.addAttribute("festeAusgabe", ausgabe);
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
+        }
+        if(ausgabe.getFrequency() != Interval.MONTHLY) {
+            potManager.addPot(new PotForRegularExp(ausgabe.getDesc(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(IntervalCount.countMonths(ausgabe.getFrequency()))));
         }
         costManager.addToFesteAusgaben(ausgabe);
         return "redirect:/" + currYear + "/" + currMonth;
