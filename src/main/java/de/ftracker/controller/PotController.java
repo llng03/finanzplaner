@@ -1,6 +1,7 @@
 package de.ftracker.controller;
 
 import de.ftracker.model.pots.BudgetPot;
+import de.ftracker.model.pots.PotForRegularExp;
 import de.ftracker.model.pots.PotManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.time.Year;
+import java.time.YearMonth;
 
 @Controller
 public class PotController {
@@ -22,7 +25,7 @@ public class PotController {
 
     @GetMapping("/pots")
     public String pots(Model model) {
-        prepareModel(model);
+        prepareModel(model, YearMonth.now());
         return "pots";
     }
 
@@ -54,9 +57,14 @@ public class PotController {
         return "redirect:/pots";
     }
 
-    private void prepareModel(Model model) {
+    private void prepareModel(Model model, YearMonth curr) {
         model.addAttribute("pots", potManager.getPots());
         model.addAttribute("undistributed", potManager.getUndistributed());
+        for(BudgetPot pot: potManager.getPots()) {
+            if(pot instanceof PotForRegularExp) {
+                ((PotForRegularExp) pot).update(curr);
+            }
+        }
 
     }
 

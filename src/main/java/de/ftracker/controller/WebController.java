@@ -93,7 +93,7 @@ public class WebController {
             return "index";
         }
         if(ausgabe.getFrequency() != Interval.MONTHLY) {
-            potManager.addPot(new PotForRegularExp(ausgabe.getDesc(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(IntervalCount.countMonths(ausgabe.getFrequency()))));
+            potManager.addPot(new PotForRegularExp(ausgabe.getDesc(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(IntervalCount.countMonths(ausgabe.getFrequency())), costManager.getMonthlyCost(ausgabe), ausgabe.getFrequency()));
         }
         costManager.addToFesteAusgaben(ausgabe);
         return "redirect:/" + currYear + "/" + currMonth;

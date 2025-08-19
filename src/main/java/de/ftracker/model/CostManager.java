@@ -54,7 +54,7 @@ public class CostManager {
         return einnahmenUndAusgabenM;
     }
 
-    private BigDecimal getMonthlyCost(FixedCost ausgabe) {
+    public static BigDecimal getMonthlyCost(FixedCost ausgabe) {
 
         return ausgabe.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(ausgabe.getFrequency())), 2, RoundingMode.CEILING);
     }
