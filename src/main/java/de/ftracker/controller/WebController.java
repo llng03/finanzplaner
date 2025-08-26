@@ -15,12 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
-import java.util.List;
 import java.util.Locale;
 
 @Controller
@@ -76,18 +74,22 @@ public class WebController {
     }
 
     @PostMapping("/{currYear}/{currMonth}/festeEinnahme")
-    public String festeEinnahmeAbschicken(Model model, @ModelAttribute @Valid FixedCostForm festeEinname, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
+    public String addFixedIncome(Model model, @ModelAttribute @Valid FixedCostForm festeEinname, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("festeEinnahme", festeEinname);
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "indexMonth";
         }
+        System.out.println("Einnahmen1: " + costManager.getAllMonthsIncome(YearMonth.now()));
+        System.out.println("Ausgaben1: " + costManager.getAllMonthsExp(YearMonth.now()));
         costManager.addToFixedIncome(festeEinname);
+        System.out.println("Einnahmen2: " + costManager.getAllMonthsIncome(YearMonth.now()));
+        System.out.println("Ausgaben2: " + costManager.getAllMonthsExp(YearMonth.now()));
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
     @PostMapping("/{currYear}/{currMonth}/festeAusgabe")
-    public String festeAusgabeAbschicken(Model model, @ModelAttribute @Valid FixedCostForm ausgabe, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
+    public String addFixedExp(Model model, @ModelAttribute @Valid FixedCostForm ausgabe, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("festeAusgabe", ausgabe);
             prepareModel(model, YearMonth.of(currYear, currMonth));
@@ -106,7 +108,7 @@ public class WebController {
         BigDecimal amountD = new BigDecimal(amount);
         CostTables thisTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
 
-        if(potSelect.equals("")){
+        if(potSelect.isEmpty()){
             thisTables.addToPots(potManager, amountD);
         } else {
             thisTables.addToPot(potManager, amountD, potSelect);

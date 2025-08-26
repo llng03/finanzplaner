@@ -46,14 +46,22 @@ public class CostManager {
         return fixedIncomeRepository.findAll();
     }
 
+    public List<Cost> getIncome(YearMonth yearMonth) {
+        return getTablesOf(yearMonth).getEinnahmen();
+    }
+
+    public List<Cost> getExp(YearMonth yearMonth) {
+        return getTablesOf(yearMonth).getAusgaben();
+    }
+
     public List<Cost> getAllMonthsIncome(YearMonth month) {
-        List<Cost> income = getTablesOf(month).getEinnahmen();
+        List<Cost> income = getIncome(month);
         income.addAll(getMonthsEinnahmen(month));
         return income;
     }
 
     public List<Cost> getAllMonthsExp(YearMonth month) {
-        List<Cost> exp = getTablesOf(month).getAusgaben();
+        List<Cost> exp = getExp(month);
         exp.addAll(getMonthsAusgaben(month));
         return exp;
     }
@@ -113,6 +121,7 @@ public class CostManager {
 
     @Transactional
     public void addToFixedIncome(FixedCost income) {
+        System.out.println("now we save: " + income + "into fixedIncomeRepository");
         fixedIncomeRepository.save(income);
     }
 
@@ -128,6 +137,7 @@ public class CostManager {
     }
 
     public void addToFixedExp(FixedCost exp) {
+        System.out.println("now we save: " + exp + "into fixedExpRepository");
         if(exp.getFrequency() == Interval.MONTHLY) {
             fixedExpRepository.save(exp);
         } else {
