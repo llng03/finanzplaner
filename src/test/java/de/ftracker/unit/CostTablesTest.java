@@ -1,4 +1,4 @@
-package de.ftracker;
+package de.ftracker.unit;
 
 
 import de.ftracker.model.CostTables;

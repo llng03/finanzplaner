@@ -2,7 +2,7 @@ package de.ftracker.controller;
 
 import de.ftracker.model.pots.BudgetPot;
 import de.ftracker.model.pots.PotForRegularExp;
-import de.ftracker.model.pots.PotManager;
+import de.ftracker.services.pots.PotManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.YearMonth;
 
 @Controller

@@ -1,14 +1,13 @@
 package de.ftracker.controller;
 
 //import de.ftracker.model.pots.BudgetPot;
-//import de.ftracker.model.pots.PotManager;
+//import de.ftracker.services.pots.PotManager;
 import de.ftracker.model.pots.BudgetPot;
-import de.ftracker.model.pots.PotManager;
+import de.ftracker.services.pots.PotManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 

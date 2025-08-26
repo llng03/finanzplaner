@@ -1,17 +1,21 @@
 package de.ftracker.controller;
 
-import de.ftracker.model.CostManager;
+import de.ftracker.services.CostManager;
 import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.*;
 import de.ftracker.model.pots.PotForRegularExp;
-import de.ftracker.model.pots.PotManager;
+import de.ftracker.services.pots.PotManager;
 import de.ftracker.utils.IntervalCount;
+import de.ftracker.utils.MonthData;
+import de.ftracker.utils.MonthNavigation;
+import de.ftracker.utils.MonthlySums;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -43,18 +47,16 @@ public class WebController {
     }
 
     @PostMapping("/{currYear}/{currMonth}/einnahme")
-    public String einnahmeAbschicken(Model model, @ModelAttribute @Valid Cost einnahme, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
+    public String einnahmeAbschicken(Model model, @ModelAttribute @Valid Cost einnahme, BindingResult bindingResult,
+                                     @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("einnahme", einnahme);
+
             prepareModel(model, YearMonth.of(currYear, currMonth));
-            return "index";
+            return "indexMonth";
         }
 
-        einnahme.setIncome(true);
-
-        CostTables costTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
-        costTables.addCostToEinnahmen(einnahme);
-        model.addAttribute("einnahmen", costTables.getEinnahmen());
+        costManager.addIncome(currYear, currMonth, einnahme);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
@@ -63,39 +65,38 @@ public class WebController {
         if(bindingResult.hasErrors()){
             model.addAttribute("ausgabe", ausgabe);
             prepareModel(model, YearMonth.of(currYear, currMonth));
-            return "indexMonth";
+            return "index";
         }
 
-        ausgabe.setIncome(false);
 
         CostTables costTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
-        costTables.addCostToAusgaben(ausgabe);
+        costManager.addExp(currYear, currMonth, ausgabe);
         model.addAttribute("ausgaben", costTables.getAusgaben());
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
     @PostMapping("/{currYear}/{currMonth}/festeEinnahme")
-    public String festeEinnahmeAbschicken(Model model, @ModelAttribute @Valid FixedCost festeEinname, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
+    public String festeEinnahmeAbschicken(Model model, @ModelAttribute @Valid FixedCostForm festeEinname, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("festeEinnahme", festeEinname);
             prepareModel(model, YearMonth.of(currYear, currMonth));
-            return "index";
+            return "indexMonth";
         }
-        costManager.addToFesteEinnahmen(festeEinname);
+        costManager.addToFixedIncome(festeEinname);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
     @PostMapping("/{currYear}/{currMonth}/festeAusgabe")
-    public String festeAusgabeAbschicken(Model model, @ModelAttribute @Valid FixedCost ausgabe, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
+    public String festeAusgabeAbschicken(Model model, @ModelAttribute @Valid FixedCostForm ausgabe, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
             model.addAttribute("festeAusgabe", ausgabe);
             prepareModel(model, YearMonth.of(currYear, currMonth));
-            return "index";
+            return "indexMonth";
         }
         if(ausgabe.getFrequency() != Interval.MONTHLY) {
-            potManager.addPot(new PotForRegularExp(ausgabe.getDesc(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(IntervalCount.countMonths(ausgabe.getFrequency())), costManager.getMonthlyCost(ausgabe), ausgabe.getFrequency()));
+            potManager.addPot(new PotForRegularExp(ausgabe.getDescr(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(IntervalCount.countMonths(ausgabe.getFrequency())), costManager.getMonthlyCost(ausgabe), ausgabe.getFrequency()));
         }
-        costManager.addToFesteAusgaben(ausgabe);
+        costManager.addToFixedExp(ausgabe);
         return "redirect:/" + currYear + "/" + currMonth;
 
     }
@@ -114,47 +115,45 @@ public class WebController {
     }
 
     @PostMapping("/{currYear}/{currMonth}/deleteFixedEinnahme")
-    public String deleteFixedEinnahme(Model model, @RequestParam String desc, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
-        costManager.deleteFromFesteEinnahmen(desc, start);
+    public String deleteFixedEinnahme(Model model, @RequestParam String descr, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
+        costManager.deleteFromFixedIncome(descr, start);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
     @PostMapping("/{currYear}/{currMonth}/deleteFixedAusgabe")
-    public String deleteFixedAusgabe(Model model, @RequestParam String desc, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
-        costManager.deleteFromFesteAusgaben(desc, start);
+    public String deleteFixedAusgabe(Model model, @RequestParam String descr, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
+        costManager.deleteFromFesteAusgaben(descr, start);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
     private void prepareModel(Model model, YearMonth month) {
+        // - - month navigation - - //
         int currMonth = month.getMonth().getValue();
         int currYear = month.getYear();
+
+        MonthNavigation monthNavigation = new MonthNavigation(currYear, currMonth);
 
         model.addAttribute("currMonthString", month.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
 
         model.addAttribute("currMonth", currMonth);
-
         model.addAttribute("currYear", currYear);
 
-        if(currMonth != 1) {
-            model.addAttribute("prevMonth", currMonth - 1);
-            model.addAttribute("prevMonthsYear", currYear);
-        } else {
-            model.addAttribute("prevMonth", 12);
-            model.addAttribute("prevMonthsYear", currYear - 1);
-        }
+        model.addAttribute("prevMonth", monthNavigation.prevMonth);
+        model.addAttribute("prevMonthsYear", monthNavigation.nextMonthsYear);
 
-        if(currMonth != 12) {
-            model.addAttribute("nextMonth", currMonth + 1);
-            model.addAttribute("nextMonthsYear", currYear);
-        } else {
-            model.addAttribute("nextMonth", 1);
-            model.addAttribute("nextMonthsYear", currYear + 1);
-        }
+        model.addAttribute("nextMonth", monthNavigation.nextMonth);
+        model.addAttribute("nextMonthsYear", monthNavigation.prevMonthsYear);
 
+        // - -  service data - - //
         model.addAttribute("pots", potManager.getPots());
-        model.addAttribute("festeEinnahmen", costManager.getFesteEinnahmen());
-        model.addAttribute("festeAusgaben", costManager.getFesteAusgaben());
-
+        MonthData data = new MonthData(
+                costManager.getAllMonthsIncome(month),
+                costManager.getAllMonthsExp(month),
+                costManager.getFixedIncome(),
+                costManager.getFixedExp()
+        );
+        model.addAttribute("festeEinnahmen", data.fixedIncome);
+        model.addAttribute("festeAusgaben", data.fixedExpense);
 
         // Fallbacks für leere Felder bei neuem Aufruf oder Fehler
         if (!model.containsAttribute("einnahme"))
@@ -166,22 +165,21 @@ public class WebController {
         if(!model.containsAttribute("festeAusgabe"))
             model.addAttribute("festeAusgabe", new FixedCost());
 
-        CostTables costTables = costManager.getTablesOf(month);
+        /*CostTables costTables = costManager.getTablesOf(month);
 
         List<Cost> einnahmen = costManager.getMonthsEinnahmen(month);
         List<Cost> ausgaben = costManager.getMonthsAusgaben(month);
-
+        //hier ist Logik, die eig nicht in den Controller gehört(?)
         einnahmen.addAll(costTables.getEinnahmen());
-        ausgaben.addAll(costTables.getAusgaben());
+        ausgaben.addAll(costTables.getAusgaben());*/
 
-        model.addAttribute("einnahmen", einnahmen);
-        model.addAttribute("ausgaben", ausgaben);
+        model.addAttribute("einnahmen", data.income);
+        model.addAttribute("ausgaben", data.expense);
 
-        BigDecimal sumIn = costManager.getThisMonthsEinnahmenSum(month);
-        BigDecimal sumOut = costManager.getThisMonthsAusgabenSum(month);
-
-        model.addAttribute("summeIn", sumIn);
-        model.addAttribute("summeOut", sumOut);
-        model.addAttribute("differenz", sumIn.subtract(sumOut));
+        // - - sums - - //
+        MonthlySums monthlySums = costManager.calculateThisMonthsSums(month);
+        model.addAttribute("summeIn", monthlySums.sumIn);
+        model.addAttribute("summeOut", monthlySums.sumOut);
+        model.addAttribute("differenz", monthlySums.difference);
     }
 }

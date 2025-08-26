@@ -1,33 +1,50 @@
 package de.ftracker.model.pots;
 
 import de.ftracker.model.costDTOs.Interval;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import org.hibernate.annotations.AttributeBinderType;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
 
+@Entity
+@DiscriminatorValue("REGULAR")
 public class PotForRegularExp extends BudgetPot{
-    private YearMonth lastSaved;
+    private int lastSavedMonth;
+    private int lastSavedYear;
 
-    private YearMonth lastPayed;
+    private int lastPayedMonth;
+    private int lastPayedYear;
 
     private BigDecimal regularAmount;
 
+    @Enumerated(EnumType.STRING)
     private Interval frequency;
 
-
+    public PotForRegularExp() {}
 
     public PotForRegularExp(String name, YearMonth lastSaved, YearMonth lastPayed, BigDecimal regularAmount, Interval frequency) {
         super(name);
-        this.lastSaved = lastSaved;
-        this.lastPayed = lastPayed;
+        this.lastSavedMonth = lastSaved.getMonthValue();
+        this.lastSavedYear = lastSaved.getYear();
+        this.lastPayedMonth = lastPayed.getMonthValue();
+        this.lastPayedYear = lastPayed.getYear();
         this.regularAmount = regularAmount;
         this.frequency = frequency;
     }
 
     public void update(YearMonth current) {
-        while(!lastSaved.equals(current)) {
-            lastSaved = lastSaved.plusMonths(1);
-            addEntry(lastSaved.atDay(1), regularAmount);
+        while(lastSavedMonth != current.getMonthValue() || lastSavedYear != current.getYear()) {
+            if(lastSavedMonth != 12){
+                lastSavedMonth++;
+            } else {
+                lastSavedMonth = 1;
+                lastSavedYear++;
+            }
+            addEntry(YearMonth.of(lastSavedYear, lastSavedMonth).atDay(1), regularAmount);
         }
     }
 }

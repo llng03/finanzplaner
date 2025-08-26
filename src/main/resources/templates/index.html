@@ -14,9 +14,9 @@
         <form method="post" th:object="${einnahme}" th:action="@{/{currYear}/{currMonth}/einnahme(currYear=${currYear}, currMonth=${currMonth})}">
             <h2>Einnahmen</h2>
             <div class="form-field">
-                <label for="descIn">Einnahme:</label>
-                <input type="text" id="descIn" th:field="*{desc}" placeholder="z.B. Gehalt">
-                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+                <label for="descrIn">Einnahme:</label>
+                <input type="text" id="descrIn" th:field="*{descr}" placeholder="z.B. Gehalt">
+                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
             </div>
 
             <div class="form-field">
@@ -31,9 +31,9 @@
         <form method="post" th:object="${ausgabe}" th:action="@{/{currYear}/{currMonth}/ausgabe(currYear=${currYear}, currMonth=${currMonth})}">
             <h2>Ausgaben</h2>
             <div class="form-field">
-                <label for="descOut">Ausgabe:</label>
-                <input type="text" id="descOut" th:field="*{desc}" placeholder="z.B. Einkauf bei Aldi">
-                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+                <label for="descrOut">Ausgabe:</label>
+                <input type="text" id="descrOut" th:field="*{descr}" placeholder="z.B. Einkauf bei Aldi">
+                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
             </div>
 
             <div class="form-field">
@@ -55,9 +55,9 @@
             <span class="close" onclick="closeModalIn()">&times;</span>
 
             <form method="post" th:object="${festeEinnahme}" th:action="@{/{currYear}/{currMonth}/festeEinnahme(currYear=${currYear}, currMonth=${currMonth})}">
-                <label for="desc">Einahme: </label>
-                <input type="text" id="desc" th:field="*{desc}" placeholder="z.B. Gehalt">
-                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+                <label for="descr">Einahme: </label>
+                <input type="text" id="descr" th:field="*{descr}" placeholder="z.B. Gehalt">
+                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
 
                 <label for="betrag">Betrag:</label>
                 <input type="number" id="betrag" th:field="*{betrag}" step="0.01" min="0">
@@ -90,9 +90,9 @@
             <span class="close" onclick="closeModalOut()">&times;</span>
 
             <form method="post" th:object="${festeAusgabe}" th:action="@{/{currYear}/{currMonth}/festeAusgabe(currYear=${currYear}, currMonth=${currMonth})}">
-                <label for="desc-out">Ausgabe: </label>
-                <input type="text" id="desc-out" th:field="*{desc}" placeholder="z.B. Miete">
-                <div class="error" th:if="${#fields.hasErrors('desc')}" th:errors="*{desc}"></div>
+                <label for="descr-out">Ausgabe: </label>
+                <input type="text" id="descr-out" th:field="*{descr}" placeholder="z.B. Miete">
+                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
 
                 <label for="betrag-out">Betrag:</label>
                 <input type="number" id="betrag-out" th:field="*{betrag}" step="0.01" min="0">
@@ -173,14 +173,14 @@
                 </thead>
                 <tbody>
                 <tr th:each="fEinnahme: ${festeEinnahmen}">
-                    <td th:text="${fEinnahme.desc}"></td>
+                    <td th:text="${fEinnahme.descr}"></td>
                     <td th:text="${#numbers.formatDecimal(fEinnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
                     <td th:text="${fEinnahme.frequency}">monaltich</td>
                     <td th:text="${fEinnahme.start}"></td>
                     <td th:text="${fEinnahme.endValue != null ? fEinnahme.endValue : '-'}">-</td>
                     <td>
                         <form method="post" th:action="@{/{year}/{month}/deleteFixedEinnahme(year=${currYear}, month=${currMonth})}">
-                            <input type="hidden" name="desc" th:value="${fEinnahme.desc}">
+                            <input type="hidden" name="descr" th:value="${fEinnahme.descr}">
                             <input type="hidden" name="start" th:value="${fEinnahme.start}">
                             <button type="submit">-</button>
                         </form>
@@ -202,14 +202,14 @@
                 </thead>
                 <tbody>
                 <tr th:each="fAusgabe: ${festeAusgaben}">
-                    <td th:text="${fAusgabe.desc}"></td>
+                    <td th:text="${fAusgabe.descr}"></td>
                     <td th:text="${#numbers.formatDecimal(fAusgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
                     <td th:text="${fAusgabe.frequency}">monaltich</td>
                     <td th:text="${fAusgabe.start}"></td>
                     <td th:text="${fAusgabe.endValue != null ? fAusgabe.endValue: '-'}">-</td>
                     <td>
                         <form method="post" th:action="@{/{year}/{month}/deleteFixedAusgabe(year=${currYear}, month=${currMonth})}">
-                            <input type="hidden" name="desc" th:value="${fAusgabe.desc}">
+                            <input type="hidden" name="descr" th:value="${fAusgabe.descr}">
                             <input type="hidden" name="start" th:value="${fAusgabe.start}">
                             <button type="submit">-</button>
                         </form>
@@ -250,7 +250,7 @@
             </thead>
             <tbody>
             <tr th:each="einnahme: ${einnahmen}">
-                <td th:text="${einnahme.desc}"></td>
+                <td th:text="${einnahme.descr}"></td>
                 <td th:text="${#numbers.formatDecimal(einnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
             </tr>
             </tbody>
@@ -272,7 +272,7 @@
             </thead>
             <tbody>
                 <tr th:each="ausgabe: ${ausgaben}">
-                    <td th:text="${ausgabe.desc}"></td>
+                    <td th:text="${ausgabe.descr}"></td>
                     <td th:text="${#numbers.formatDecimal(ausgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
                 </tr>
             </tbody>

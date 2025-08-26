@@ -1,59 +1,81 @@
 package de.ftracker.model.costDTOs;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.Optional;
 
 import static de.ftracker.model.costDTOs.Interval.MONTHLY;
 
+@Getter
+@Setter
+@Entity
+@DiscriminatorValue("FIXED")
 public class FixedCost extends Cost{
+
+    @Enumerated(EnumType.STRING)
     private Interval frequency = MONTHLY;
 
-    private YearMonth start;
+    private int startMonth;
 
-    private Optional<YearMonth> end; //empty: no current ending
+    private int startYear;
+
+    private Integer endMonth;
+
+    private Integer endYear;
+
 
     public FixedCost() {
         super("", BigDecimal.ZERO);
         this.frequency = Interval.MONTHLY; // oder null
-        this.start = YearMonth.now();
-        this.end = Optional.empty(); // oder null
+        this.startMonth = YearMonth.now().getMonthValue();
+        this.startYear = YearMonth.now().getYear();
+        this.endMonth = null;
+        this.endYear = null;
     }
 
     public FixedCost(String name, BigDecimal betrag, Interval frequency, YearMonth start, YearMonth end) {
         super(name, betrag);
         this.frequency = frequency;
-        this.start = start;
-        this.end = Optional.ofNullable(end);
-    }
-
-    public void setFrequency(Interval frequency) {
-        this.frequency = frequency;
+        this.startMonth = start.getMonthValue();
+        this.startYear = start.getYear();
+        if (end != null) {
+            this.endMonth = end.getMonthValue();
+            this.endYear = end.getYear();
+        } else {
+            this.endMonth = null;
+            this.endYear = null;
+        }
     }
 
     public void setStart(YearMonth start) {
-        this.start = start;
+        this.startMonth = start.getMonthValue();
+        this.startYear = start.getYear();
     }
 
-    public void setEndValue(YearMonth end) {
-        this.end = Optional.ofNullable(end);
-    }
-
-
-    public Interval getFrequency() {
-        return frequency;
+    public void setEnd(Optional<YearMonth> ym) {
+        if (ym.isPresent()) {
+            this.endYear = ym.get().getYear();
+            this.endMonth = ym.get().getMonthValue();
+        } else {
+            this.endYear = null;
+            this.endMonth = null;
+        }
     }
 
     public YearMonth getStart() {
-        return start;
+        return YearMonth.of(startYear, startMonth);
     }
 
     public Optional<YearMonth> getEnd() {
-        return end;
+        return endYear == null ? Optional.empty() : Optional.of(YearMonth.of(endYear, endMonth));
     }
 
     public YearMonth getEndValue() {
-        return end.orElse(null);
+        return getEnd().orElse(null);
     }
 
 

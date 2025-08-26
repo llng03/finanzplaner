@@ -1,28 +1,42 @@
 package de.ftracker.model;
 
 import de.ftracker.model.costDTOs.Cost;
-import de.ftracker.model.costDTOs.FixedCost;
-import de.ftracker.model.pots.PotManager;
+import de.ftracker.services.pots.PotManager;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class CostTables {
 
-    private List<Cost> einnahmen = new ArrayList<>();
-    private List<Cost> ausgaben = new ArrayList<>();
-    private List<FixedCost> fixedEinnahmen = new ArrayList<>();
-    private List<FixedCost> fixedAusgaben = new ArrayList<>();
-    private YearMonth yearMonth;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private int month;
+    private int year;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Cost> einnahmen;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Cost> ausgaben;
 
     public CostTables() {
-        yearMonth = YearMonth.now();
+        this.month = YearMonth.now().getMonthValue();
+        this.year = YearMonth.now().getYear();
+        this.einnahmen = new ArrayList<>();
+        this.ausgaben = new ArrayList<>();
     }
 
     public CostTables(YearMonth yearMonth) {
-        this.yearMonth = yearMonth;
+        this.month = yearMonth.getMonthValue();
+        this.year = yearMonth.getYear();
+        this.einnahmen = new ArrayList<>();
+        this.ausgaben = new ArrayList<>();
     }
 
     public List<Cost> getEinnahmen() {
@@ -34,7 +48,12 @@ public class CostTables {
     }
 
     public YearMonth getYearMonth() {
-        return yearMonth;
+        return YearMonth.of(this.year, this.month);
+    }
+
+    public void setYearMonth(YearMonth yearMonth) {
+        this.month = yearMonth.getMonthValue();
+        this.year = yearMonth.getYear();
     }
 
     public void setEinnahmen(List<Cost> einnahmen) {this.einnahmen = einnahmen;}
