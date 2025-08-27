@@ -1,12 +1,9 @@
 package de.ftracker.unit;
 
-import de.ftracker.services.CostManager;
+import de.ftracker.services.*;
 import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
 import de.ftracker.model.costDTOs.Interval;
-import de.ftracker.services.CostTablesRepository;
-import de.ftracker.services.FixedExpRepository;
-import de.ftracker.services.FixedIncomeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,10 +27,7 @@ public class CostManagerTest {
     private CostTablesRepository costTablesRepository;
 
     @Mock
-    private FixedExpRepository fixedExpRepository;
-
-    @Mock
-    private FixedIncomeRepository fixedIncomeRepository;
+    private FixedCostsRepository fixedCostsRepository;
 
     @InjectMocks
     private CostManager costManager;
@@ -43,8 +37,8 @@ public class CostManagerTest {
     @DisplayName("getApplicableFixedCost funktioniert für aktuellen Monat")
     void test1() {
         FixedCost fixedCost = new FixedCost("fixedEinnahme",
-                new BigDecimal("50"), Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
-        when(fixedIncomeRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
+                new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
+        when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, Month.JULY));
 
@@ -55,9 +49,9 @@ public class CostManagerTest {
     @DisplayName("gAFC funktioniert für nächsten Monat")
     void test2() {
         FixedCost fixedCost = new FixedCost("fixedEinnahme",
-            new BigDecimal("50"), Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
+            new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
 
-        when(fixedIncomeRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
+        when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, AUGUST));
 
@@ -69,8 +63,8 @@ public class CostManagerTest {
     @DisplayName("gAFC funktioniert für letzen Monat nicht")
     void test3() {
         FixedCost fixedCost = new FixedCost("fixedEinnahme",
-                new BigDecimal("50"), Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
-        when(fixedIncomeRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
+                new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
+        when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, Month.JUNE));
 
@@ -81,8 +75,8 @@ public class CostManagerTest {
     @DisplayName("gAFC funktioniert für nächsten Monat nicht falls unerwünscht")
     void test4() {
         FixedCost fixedCost = new FixedCost("fixedEinnahme",
-                new BigDecimal("50"), Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
-        when(fixedIncomeRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
+                new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
+        when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, Month.SEPTEMBER));
 
@@ -94,8 +88,8 @@ public class CostManagerTest {
     @DisplayName("gAFC funktioniert für letzten erwünschten Monat noch")
     void test5() {
         FixedCost fixedCost = new FixedCost("fixedEinnahme",
-                new BigDecimal("50"), Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
-        when(fixedIncomeRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
+                new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
+        when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, AUGUST));
 
@@ -107,7 +101,7 @@ public class CostManagerTest {
     @Test
     @DisplayName("getMonthlyCost correct for QUATERLY")
     void test6() {
-        FixedCost quaterInc = new FixedCost("quaterInc",new BigDecimal("75"),
+        FixedCost quaterInc = new FixedCost("quaterInc",new BigDecimal("75"), false,
                 Interval.QUARTERLY, YearMonth.of(2025, AUGUST), null);
         assertThat(costManager.getMonthlyCost(quaterInc)).isEqualByComparingTo(new BigDecimal("25"));
     }
@@ -115,7 +109,7 @@ public class CostManagerTest {
     @Test
     @DisplayName("getMonthlyCost correct for SEMI_ANNUAL")
     void test7() {
-        FixedCost quaterInc = new FixedCost("quaterInc",new BigDecimal("60"),
+        FixedCost quaterInc = new FixedCost("quaterInc",new BigDecimal("60"), false,
                 Interval.SEMI_ANNUAL, YearMonth.of(2025, AUGUST), null);
         assertThat(costManager.getMonthlyCost(quaterInc)).isEqualByComparingTo(new BigDecimal("10"));
     }
@@ -123,7 +117,7 @@ public class CostManagerTest {
     @Test
     @DisplayName("getMonthlyCost correct for ANNUAL")
     void test8() {
-        FixedCost quaterInc = new FixedCost("quaterInc",new BigDecimal("120"),
+        FixedCost quaterInc = new FixedCost("quaterInc",new BigDecimal("120"), false,
                 Interval.ANNUAL, YearMonth.of(2025, AUGUST), null);
         assertThat(costManager.getMonthlyCost(quaterInc)).isEqualByComparingTo(new BigDecimal("10"));
     }

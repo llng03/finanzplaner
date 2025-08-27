@@ -71,7 +71,7 @@ public class CostTables {
     }
 
     public void addCostToAusgaben(String name, BigDecimal betrag) {
-        addCostToAusgaben(new Cost(name, betrag));
+        addCostToAusgaben(new Cost(name, betrag, false));
     }
 
     public void addToPots(PotManager potManger, BigDecimal amount) {

@@ -19,14 +19,12 @@ import java.util.stream.Collectors;
 @Service
 public class CostManager {
     private final CostTablesRepository costTablesRepository;
-    private final FixedIncomeRepository fixedIncomeRepository;
-    private final FixedExpRepository fixedExpRepository;
+    private final FixedCostsRepository fixedCostsRepository;
 
 
-    public CostManager(CostTablesRepository costTablesRepository, FixedIncomeRepository fixedIncomeRepository, FixedExpRepository fixedExpRepository) {
+    public CostManager(CostTablesRepository costTablesRepository, FixedCostsRepository fixedCostsRepository) {
         this.costTablesRepository = costTablesRepository;
-        this.fixedIncomeRepository = fixedIncomeRepository;
-        this.fixedExpRepository = fixedExpRepository;
+        this.fixedCostsRepository = fixedCostsRepository;
     }
 
     public CostTables getTablesOf(YearMonth yearMonth) {
@@ -38,12 +36,16 @@ public class CostManager {
                 });
     }
 
-    public List<FixedCost> getFixedExp() {
-        return fixedExpRepository.findAll();
+    public List<FixedCost> getFixedIncome() {
+        return fixedCostsRepository.findAll().stream()
+                .filter(c -> c.getIsIncome())
+                .collect(Collectors.toList());
     }
 
-    public List<FixedCost> getFixedIncome() {
-        return fixedIncomeRepository.findAll();
+    public List<FixedCost> getFixedExp() {
+        return fixedCostsRepository.findAll().stream()
+                .filter(c -> !c.getIsIncome())
+                .collect(Collectors.toList());
     }
 
     public List<Cost> getIncome(YearMonth yearMonth) {
@@ -113,6 +115,7 @@ public class CostManager {
         FixedCost fixedCost = new FixedCost();
         fixedCost.setDescr(incomeForm.getDescr());
         fixedCost.setBetrag(incomeForm.getBetrag());
+        fixedCost.setIsIncome(incomeForm.getIsIncome());
         fixedCost.setFrequency(incomeForm.getFrequency());
         fixedCost.setStart(incomeForm.getStart());
         fixedCost.setEnd(incomeForm.getEnd());
@@ -122,7 +125,7 @@ public class CostManager {
     @Transactional
     public void addToFixedIncome(FixedCost income) {
         System.out.println("now we save: " + income + "into fixedIncomeRepository");
-        fixedIncomeRepository.save(income);
+        fixedCostsRepository.save(income);
     }
 
     @Transactional
@@ -139,30 +142,30 @@ public class CostManager {
     public void addToFixedExp(FixedCost exp) {
         System.out.println("now we save: " + exp + "into fixedExpRepository");
         if(exp.getFrequency() == Interval.MONTHLY) {
-            fixedExpRepository.save(exp);
+            fixedCostsRepository.save(exp);
         } else {
-            fixedExpRepository.save(
-                    new FixedCost(exp.getDescr(), getMonthlyCost(exp), Interval.MONTHLY, exp.getStart(), exp.getEndValue())
+            fixedCostsRepository.save(
+                    new FixedCost(exp.getDescr(), getMonthlyCost(exp), false, Interval.MONTHLY, exp.getStart(), exp.getEndValue())
             );
         }
     }
 
     public void deleteFromFixedIncome(FixedCost income) {
-        fixedIncomeRepository.delete(income);
+        fixedCostsRepository.delete(income);
     }
 
 
 
     public void deleteFromFixedIncome(String income, YearMonth start) {
-        fixedIncomeRepository.deleteByDescrAndStart(income, start.getYear(), start.getMonthValue());
+        fixedCostsRepository.deleteByDescrAndStart(income, start.getYear(), start.getMonthValue());
     }
 
     public void deleteFromFesteAusgaben(FixedCost ausgabe) {
-        fixedExpRepository.delete(ausgabe);
+        fixedCostsRepository.delete(ausgabe);
     }
 
     public void deleteFromFesteAusgaben(String ausgabe, YearMonth start) {
-        fixedExpRepository.deleteByDescrAndStart(ausgabe, start.getYear(), start.getMonthValue());
+        fixedCostsRepository.deleteByDescrAndStart(ausgabe, start.getYear(), start.getMonthValue());
     }
 
     public BigDecimal getThisMonthsEinnahmenSum(YearMonth month) {

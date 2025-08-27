@@ -26,18 +26,28 @@ public class Cost {
     @Min(value = 0, message = "Betrag darf nicht negativ sein")
     private BigDecimal betrag;
 
+    private boolean isIncome;
+
     public Cost() {
         // Default-Konstruktor für Spring Binding
     }
 
-    public Cost(String descr, BigDecimal betrag) {
+    public Cost(String descr, BigDecimal betrag, boolean isIncome) {
         this.descr = descr;
         this.betrag = betrag;
+    }
+
+    public void setIsIncome(boolean isIncome) {
+        this.isIncome = isIncome;
     }
 
     @Override
     public String toString() {
         return "Cost[descr=" + descr + ", betrag=" + betrag + "]";
+    }
+
+    public boolean getIsIncome(){
+        return isIncome;
     }
 
     // equals() und hashCode() kannst du nur überschreiben, wenn nötig

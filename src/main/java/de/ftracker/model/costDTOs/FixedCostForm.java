@@ -16,6 +16,8 @@ public class FixedCostForm {
 
     private BigDecimal betrag;
 
+    private boolean isIncome;
+
     private Interval frequency = MONTHLY;
 
     private YearMonth start;
@@ -25,14 +27,16 @@ public class FixedCostForm {
     public FixedCostForm() {
         this.descr = "";
         this.betrag = BigDecimal.ZERO;
+        this.isIncome = true;
         this.frequency = Interval.MONTHLY; // oder null
         this.start = YearMonth.now();
         this.end = null;
     }
 
-    public FixedCostForm(String name, BigDecimal betrag, Interval frequency, YearMonth start, YearMonth end) {
+    public FixedCostForm(String name, BigDecimal betrag, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
         this.descr = name;
         this.betrag = betrag;
+        this.isIncome = isIncome;
         this.frequency = frequency;
         this.start = start;
         this.end = end;
@@ -40,5 +44,9 @@ public class FixedCostForm {
 
     public Optional<YearMonth> getEnd(){
         return Optional.ofNullable(end);
+    }
+
+    public boolean getIsIncome(){
+        return isIncome;
     }
 }

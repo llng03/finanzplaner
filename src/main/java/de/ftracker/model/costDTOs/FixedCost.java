@@ -29,7 +29,7 @@ public class FixedCost extends Cost{
 
 
     public FixedCost() {
-        super("", BigDecimal.ZERO);
+        super("", BigDecimal.ZERO, true);
         this.frequency = Interval.MONTHLY; // oder null
         this.startMonth = YearMonth.now().getMonthValue();
         this.startYear = YearMonth.now().getYear();
@@ -37,8 +37,8 @@ public class FixedCost extends Cost{
         this.endYear = null;
     }
 
-    public FixedCost(String name, BigDecimal betrag, Interval frequency, YearMonth start, YearMonth end) {
-        super(name, betrag);
+    public FixedCost(String name, BigDecimal betrag, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
+        super(name, betrag, isIncome);
         this.frequency = frequency;
         this.startMonth = start.getMonthValue();
         this.startYear = start.getYear();
