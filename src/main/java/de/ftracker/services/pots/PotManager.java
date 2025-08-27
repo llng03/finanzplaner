@@ -1,11 +1,13 @@
 package de.ftracker.services.pots;
 
 import de.ftracker.model.pots.BudgetPot;
+import de.ftracker.model.pots.PotForRegularExp;
 import de.ftracker.model.pots.PotSummary;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,11 @@ public class PotManager {
     public BigDecimal getTotal() {
         BigDecimal currentUndistributed = potSummary.getUndistributed();
         return currentUndistributed.add(sumAllPots());
+    }
+
+    public void update(PotForRegularExp pot, YearMonth curr) {
+        pot.update(curr);
+        potRepository.save(pot);
     }
 
     private BigDecimal sumAllPots() {

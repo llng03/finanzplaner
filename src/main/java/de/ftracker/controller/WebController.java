@@ -96,7 +96,7 @@ public class WebController {
             return "indexMonth";
         }
         if(ausgabe.getFrequency() != Interval.MONTHLY) {
-            potManager.addPot(new PotForRegularExp(ausgabe.getDescr(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(IntervalCount.countMonths(ausgabe.getFrequency())), costManager.getMonthlyCost(ausgabe), ausgabe.getFrequency()));
+            potManager.addPot(new PotForRegularExp(ausgabe.getDescr(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(1), costManager.getMonthlyCost(ausgabe), ausgabe.getFrequency()));
         }
         costManager.addToFixedExp(ausgabe);
         return "redirect:/" + currYear + "/" + currMonth;
@@ -109,9 +109,9 @@ public class WebController {
         CostTables thisTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
 
         if(potSelect.isEmpty()){
-            thisTables.addToPots(potManager, amountD);
+            costManager.addToPots(thisTables, potManager, amountD);
         } else {
-            thisTables.addToPot(potManager, amountD, potSelect);
+            costManager.addToPot(thisTables, potManager, amountD, potSelect);
         }
         return "redirect:/" + currYear + "/" + currMonth;
     }

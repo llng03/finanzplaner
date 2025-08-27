@@ -69,12 +69,10 @@ public class PotController {
         model.addAttribute("undistributed", potManager.getUndistributed());
         model.addAttribute("sumAll", potManager.getTotal());
         for(BudgetPot pot: potManager.getPots()) {
-            if(pot instanceof PotForRegularExp) {
-                ((PotForRegularExp) pot).update(curr);
+            if(pot instanceof PotForRegularExp){
+                potManager.update((PotForRegularExp) pot,curr);
             }
         }
 
     }
-
-
 }

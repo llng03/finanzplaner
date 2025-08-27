@@ -5,6 +5,7 @@ import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.model.costDTOs.FixedCost;
 import de.ftracker.model.costDTOs.FixedCostForm;
 import de.ftracker.model.costDTOs.Interval;
+import de.ftracker.services.pots.PotManager;
 import de.ftracker.utils.IntervalCount;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.stereotype.Service;
@@ -89,11 +90,11 @@ public class CostManager {
     }
 
     public static BigDecimal getMonthlyCost(FixedCostForm costForm) {
-        return costForm.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(costForm.getFrequency())));
+        return costForm.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(costForm.getFrequency())), 2, RoundingMode.HALF_UP);
     }
 
     public static BigDecimal getMonthlyCost(FixedCost ausgabe) {
-        return ausgabe.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(ausgabe.getFrequency())), 2, RoundingMode.CEILING);
+        return ausgabe.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(ausgabe.getFrequency())), 2, RoundingMode.HALF_UP);
     }
 
     @Transactional
@@ -188,5 +189,15 @@ public class CostManager {
         BigDecimal sumIn = getThisMonthsEinnahmenSum(month);
         BigDecimal sumOut = getThisMonthsAusgabenSum(month);
         return new MonthlySums(sumIn, sumOut);
+    }
+
+    public void addToPots(CostTables thisTables, PotManager potManager, BigDecimal amountD) {
+        thisTables.addToPots(potManager, amountD);
+        costTablesRepository.save(thisTables);
+    }
+
+    public void addToPot(CostTables thisTables, PotManager potManager, BigDecimal amoundD, String potName) {
+        thisTables.addToPot(potManager, amoundD, potName);
+        costTablesRepository.save(thisTables);
     }
 }
