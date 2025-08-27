@@ -80,11 +80,7 @@ public class WebController {
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "indexMonth";
         }
-        System.out.println("Einnahmen1: " + costManager.getAllMonthsIncome(YearMonth.now()));
-        System.out.println("Ausgaben1: " + costManager.getAllMonthsExp(YearMonth.now()));
         costManager.addToFixedIncome(festeEinname);
-        System.out.println("Einnahmen2: " + costManager.getAllMonthsIncome(YearMonth.now()));
-        System.out.println("Ausgaben2: " + costManager.getAllMonthsExp(YearMonth.now()));
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
@@ -141,10 +137,10 @@ public class WebController {
         model.addAttribute("currYear", currYear);
 
         model.addAttribute("prevMonth", monthNavigation.prevMonth);
-        model.addAttribute("prevMonthsYear", monthNavigation.nextMonthsYear);
+        model.addAttribute("prevMonthsYear", monthNavigation.prevMonthsYear);
 
         model.addAttribute("nextMonth", monthNavigation.nextMonth);
-        model.addAttribute("nextMonthsYear", monthNavigation.prevMonthsYear);
+        model.addAttribute("nextMonthsYear", monthNavigation.nextMonthsYear);
 
         // - -  service data - - //
         model.addAttribute("pots", potManager.getPots());
