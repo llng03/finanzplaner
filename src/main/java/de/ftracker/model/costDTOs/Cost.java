@@ -2,6 +2,7 @@ package de.ftracker.model.costDTOs;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class Cost {
     @NotBlank(message = "Beschreibung darf nicht leer sein")
     private String descr;
 
-    @Min(value = 0, message = "Betrag darf nicht negativ sein")
+    @DecimalMin(value = "0.00", message = "Betrag darf nicht negativ sein")
     private BigDecimal betrag;
 
     private boolean isIncome;

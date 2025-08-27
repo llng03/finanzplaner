@@ -51,7 +51,7 @@ public class WebController {
             model.addAttribute("einnahme", einnahme);
 
             prepareModel(model, YearMonth.of(currYear, currMonth));
-            return "indexMonth";
+            return "index";
         }
 
         costManager.addIncome(currYear, currMonth, einnahme);
