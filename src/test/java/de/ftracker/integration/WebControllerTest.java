@@ -16,6 +16,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.Month;
@@ -27,8 +31,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -165,5 +168,51 @@ public class WebControllerTest {
                 )));
 
     }
+
+    @Test
+    @DisplayName("deleteFixedIncome works")
+    void test9() throws Exception {
+        mockMvc.perform(post("/2025/6/deleteFixedEinnahme")
+                        .param("descr", "TestEinnahme")
+                        .param("start", "2025-01")) // YearMonth als String
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/2025/6"));
+
+        verify(costManager).deleteFromFixedIncome("TestEinnahme", YearMonth.of(2025, 1));
+    }
+
+
+    @Test
+    @DisplayName("addToPots with select empty works")
+    void test10() throws Exception {
+        CostTables mockTables = new CostTables(YearMonth.of(2025, 6));
+        when(costManager.getTablesOf(YearMonth.of(2025, 6))).thenReturn(mockTables);
+
+        mockMvc.perform(post("/2025/6/toPots")
+                        .param("amount", "100.5")
+                        .param("potSelect", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/2025/6"));
+
+        verify(costManager).addToPots(mockTables, potManager, new BigDecimal("100.5"));
+        verify(costManager, never()).addToPot(any(), any(), any(), anyString());
+    }
+
+    @Test
+    @DisplayName("addToPots with not Empty potSelect")
+    void test11() throws Exception {
+        CostTables mockTables = new CostTables(YearMonth.of(2025, 6));
+        when(costManager.getTablesOf(YearMonth.of(2025, 6))).thenReturn(mockTables);
+
+        mockMvc.perform(post("/2025/6/toPots")
+                        .param("amount", "200")
+                        .param("potSelect", "MyPot"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/2025/6"));
+
+        verify(costManager).addToPot(mockTables, potManager, new BigDecimal("200"), "MyPot");
+        verify(costManager, never()).addToPots(any(), any(), any());
+    }
+
 
 }

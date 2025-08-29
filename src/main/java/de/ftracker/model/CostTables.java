@@ -3,12 +3,16 @@ package de.ftracker.model;
 import de.ftracker.model.costDTOs.Cost;
 import de.ftracker.services.pots.PotManager;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 public class CostTables {
 
