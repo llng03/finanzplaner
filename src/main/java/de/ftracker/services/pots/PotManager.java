@@ -91,4 +91,10 @@ public class PotManager {
     private BigDecimal sumAllPots() {
         return getPots().stream().map(BudgetPot::sum).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public void pay(BudgetPot pot, LocalDate date, BigDecimal amount) {
+        pot.pay(date, amount);
+        potRepository.save(pot);
+        potSummaryRepository.save(potSummary);
+    }
 }

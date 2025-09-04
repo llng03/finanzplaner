@@ -60,7 +60,8 @@ public class PotController {
     @PostMapping("/pots/pay")
     public String pay(Model model, @RequestParam("potName") String potName, @RequestParam("payAmount") double payAmount) {
         BudgetPot pot = potManager.getPot(potName);
-        pot.pay(LocalDate.now(), new BigDecimal(payAmount));
+        potManager.pay(pot, LocalDate.now(), new BigDecimal(payAmount));
+        //pot.pay(LocalDate.now(), new BigDecimal(payAmount));
         return "redirect:/pots";
     }
 

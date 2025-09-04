@@ -47,4 +47,5 @@ public class PotForRegularExp extends BudgetPot{
             addEntry(YearMonth.of(lastSavedYear, lastSavedMonth).atDay(1), regularAmount);
         }
     }
+
 }

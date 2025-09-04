@@ -28,10 +28,10 @@
                     <button type="submit" class="delete-btn">-️</button>
                 </form>
             </div>
-            <button onclick="openPayModal()">Geld herausnehmen</button>
-            <div id="payModal" class="modal hidden">
+            <button th:onclick="'openPayModal(\'' + ${pot.id} + '\')'">Geld herausnehmen</button>
+            <div th:id="'payModal-' + ${pot.id}" class="modal hidden">
                 <div class="modal-content">
-                    <span class="close" onclick="closePayModal()">x</span>
+                    <span class="close" th:onclick="'closePayModal(\'' + ${pot.id} + '\')'">x</span>
                     <!--Fehleranzeige-->
                     <div th:if="${error}" class="error">
                         <p th:text="${error}">Fehlermeldung hier</p>
@@ -108,11 +108,18 @@
     function closeCreatePotModal() {
         document.getElementById('createPotModal').classList.add('hidden');
     }
-    function openPayModal() {
-        document.getElementById('payModal').classList.remove('hidden');
+
+    function openPayModal(potId) {
+        console.log("Open modal for pot:", potId);
+        const modal = document.getElementById('payModal-' + potId);
+        console.log("Found modal:", modal);
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
     }
-    function closePayModal() {
-        document.getElementById('payModal').classList.add('hidden');
+
+    function closePayModal(potName) {
+        document.getElementById('payModal-' + potName).classList.add('hidden');
     }
 </script>
 

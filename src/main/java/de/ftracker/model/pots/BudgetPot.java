@@ -1,6 +1,7 @@
 package de.ftracker.model.pots;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "pot_type")
