@@ -1,0 +1,35 @@
+<div th:fragment="fixedIncome">
+
+    <div id="modal-in" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalIn()">&times;</span>
+
+            <form method="post" th:object="${festeEinnahme}" th:action="@{/{currYear}/{currMonth}/festeEinnahme(currYear=${currYear}, currMonth=${currMonth})}">
+                <label for="descr">Einahme: </label>
+                <input type="text" id="descr" th:field="*{descr}" placeholder="z.B. Gehalt">
+                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
+
+                <label for="betrag">Betrag:</label>
+                <input type="number" id="betrag" th:field="*{betrag}" step="0.01" min="0">
+                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+
+                <input type="hidden" th:field="*{isIncome}" value="true">
+
+                <label for="startMonat">Startmonat:</label>
+                <input type="month" id="startMonat" th:field="*{start}" required>
+
+                <label>
+                    <input type="checkbox" id="endToggle" onchange="toggleEndmonat()" checked>
+                    Kein Endmonat (läuft unbefristet)
+                </label>
+
+                <div id="endmonthSection" style="display: none;">
+                    <label for="endMonth">Endmonat</label>
+                    <input type="month" id="endMonth" th:field="*{end}">
+                </div>
+
+                <button type="submit">Hinzufügen</button>
+            </form>
+        </div>
+    </div>
+</div>

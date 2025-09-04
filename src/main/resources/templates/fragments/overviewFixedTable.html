@@ -1,0 +1,66 @@
+<div th:fragment="overviewFixed">
+
+  <div id="overview" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModalOverview()">&times;</span>
+      <h1>Überblick</h1>
+      <table>
+        <thead>
+        <tr>
+          <th>Einnahme</th>
+          <th>Betrag</th>
+          <th>Frequenz</th>
+          <th>Startmonat</th>
+          <th>Endmonat</th>
+          <th>-</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="fEinnahme: ${festeEinnahmen}">
+          <td th:text="${fEinnahme.descr}"></td>
+          <td th:text="${#numbers.formatDecimal(fEinnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+          <td th:text="${fEinnahme.frequency}">monaltich</td>
+          <td th:text="${fEinnahme.start}"></td>
+          <td th:text="${fEinnahme.endValue != null ? fEinnahme.endValue : '-'}">-</td>
+          <td>
+            <form method="post" th:action="@{/{year}/{month}/deleteFixedEinnahme(year=${currYear}, month=${currMonth})}">
+              <input type="hidden" name="descr" th:value="${fEinnahme.descr}">
+              <input type="hidden" name="start" th:value="${fEinnahme.start}">
+              <button type="submit">-</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
+        <tr>
+          <th>Ausgabe</th>
+          <th>Betrag</th>
+          <th>Frequenz</th>
+          <th>Startmonat</th>
+          <th>Endmonat</th>
+          <th>-</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="fAusgabe: ${festeAusgaben}">
+          <td th:text="${fAusgabe.descr}"></td>
+          <td th:text="${#numbers.formatDecimal(fAusgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+          <td th:text="${fAusgabe.frequency}">monaltich</td>
+          <td th:text="${fAusgabe.start}"></td>
+          <td th:text="${fAusgabe.endValue != null ? fAusgabe.endValue: '-'}">-</td>
+          <td>
+            <form method="post" th:action="@{/{year}/{month}/deleteFixedAusgabe(year=${currYear}, month=${currMonth})}">
+              <input type="hidden" name="descr" th:value="${fAusgabe.descr}">
+              <input type="hidden" name="start" th:value="${fAusgabe.start}">
+              <button type="submit">-</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

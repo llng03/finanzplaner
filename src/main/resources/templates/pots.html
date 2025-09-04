@@ -8,35 +8,42 @@
 <body>
     <h1>Übersicht</h1>
 
-    <div>
-        <h2>Unverteilt: <span th:text="${undistributed}">0.00</span> €</h2>
-        <h2>Summe: <span th:text="${sumAll}">0.00</span> €</h2>
-        <button onclick="openDistributeModal()">verteilen</button>
-        <button onclick="openCreatePotModal()">neuen Pot erstellen</button>
-    </div>
-
-<div th:each="pot: ${pots}">
-    <h3 th:text="${pot.name}">Pot Name</h3>
-    <form method="post" th:action="@{/pots/deletePot}">
-        <input type="hidden" name="potName" th:value="${pot.name}">
-        <button type="submit">-️</button>
-    </form>
-    <button onclick="openPayModal()">Geld herausnehmen</button>
-    <div id="payModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" onclick="closePayModal()">x</span>
-            <!--Fehleranzeige-->
-            <div th:if="${error}" class="error">
-                <p th:text="${error}">Fehlermeldung hier</p>
-            </div>
-            <form method="post" action="/pots/pay">
-                <input type="hidden" name="potName" th:value="${pot.name}">
-                <label for="payAmount">Betrag</label>
-                <input type="number" name="payAmount" id="payAmount" step="0.01" min="0" required>
-                <button type="submit">Bezahlen</button>
-            </form>
+    <div class="top-button-container">
+        <a href="/" class="top-button-link">&larr; Zurück zur Startseite</a>
+        <div class="top-button-right">
+            <button onclick="openDistributeModal()">verteilen</button>
+            <button onclick="openCreatePotModal()">neuen Pot erstellen</button>
         </div>
     </div>
+
+    <h2>Unverteilt: <span th:text="${undistributed}">0.00</span> €</h2>
+    <h2>Summe: <span th:text="${sumAll}">0.00</span> €</h2>
+
+    <div class="pots-container">
+        <div th:each="pot: ${pots}">
+            <div class="pot-header">
+                <h3 th:text="${pot.name}">Pot Name</h3>
+                <form method="post" th:action="@{/pots/deletePot}">
+                    <input type="hidden" name="potName" th:value="${pot.name}">
+                    <button type="submit" class="delete-btn">-️</button>
+                </form>
+            </div>
+            <button onclick="openPayModal()">Geld herausnehmen</button>
+            <div id="payModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close" onclick="closePayModal()">x</span>
+                    <!--Fehleranzeige-->
+                    <div th:if="${error}" class="error">
+                        <p th:text="${error}">Fehlermeldung hier</p>
+                    </div>
+                    <form method="post" action="/pots/pay">
+                        <input type="hidden" name="potName" th:value="${pot.name}">
+                        <label for="payAmount">Betrag</label>
+                        <input type="number" name="payAmount" id="payAmount" step="0.01" min="0" required>
+                        <button type="submit">Bezahlen</button>
+                    </form>
+                </div>
+            </div>
     <table>
         <thead>
             <tr>

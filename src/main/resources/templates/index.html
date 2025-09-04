@@ -3,228 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>Tracker</title>
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">-->
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <h1 th:text="${currMonthString} + ' ' + ${currYear}">this month</h1>
-    <a href="/pots">Zu den Pots</a>
-    <a th:href="@{/{year}/{month}(year = ${prevMonthsYear}, month=${prevMonth})}">letzter Monat</a>
-    <a th:href="@{/{year}/{month}(year = ${nextMonthsYear}, month=${nextMonth})}">nächster Monat</a>
-    <div class="form-container">
-        <form method="post" th:object="${einnahme}" th:action="@{/{currYear}/{currMonth}/einnahme(currYear=${currYear}, currMonth=${currMonth})}">
-            <h2>Einnahmen</h2>
-            <div class="form-field">
-                <label for="descrIn">Einnahme:</label>
-                <input type="text" id="descrIn" th:field="*{descr}" placeholder="z.B. Gehalt">
-                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
-            </div>
-
-            <div class="form-field">
-                <label for="costIn">Betrag (in €):</label>
-                <input type="number" id="costIn" th:field="*{betrag}" step="0.01" min="0" placeholder="z. B. 12.50">
-                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
-            </div>
-            <input type="hidden" th:field="*{isIncome}" value="true">
-
-            <button type="submit">Hinzufügen</button>
-        </form>
-
-        <form method="post" th:object="${ausgabe}" th:action="@{/{currYear}/{currMonth}/ausgabe(currYear=${currYear}, currMonth=${currMonth})}">
-            <h2>Ausgaben</h2>
-            <div class="form-field">
-                <label for="descrOut">Ausgabe:</label>
-                <input type="text" id="descrOut" th:field="*{descr}" placeholder="z.B. Einkauf bei Aldi">
-                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
-            </div>
-
-            <div class="form-field">
-                <label for="costOut">Kosten (in €):</label>
-                <input type="number" id="costOut" th:field="*{betrag}" step="0.01" min="0" placeholder="z. B. 12.50">
-                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
-            </div>
-            <input type="hidden" th:field="*{isIncome}" value="false">
-
-            <button type="submit">Hinzufügen</button>
-        </form>
+    <div class="month-header">
+        <a th:href="@{/{year}/{month}(year = ${prevMonthsYear}, month=${prevMonth})}"class="arrow">&#8592;</a>
+        <h1 th:text="${currMonthString} + ' ' + ${currYear}">this month</h1>
+        <a th:href="@{/{year}/{month}(year = ${nextMonthsYear}, month=${nextMonth})}"class="arrow">&#8594;</a>
     </div>
 
-    <div class="tocenter">
-        <button onclick="openModalIn() ">+ Monatliche Einnahme hinzufügen</button>
-    </div>
-
-    <div id="modal-in" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" onclick="closeModalIn()">&times;</span>
-
-            <form method="post" th:object="${festeEinnahme}" th:action="@{/{currYear}/{currMonth}/festeEinnahme(currYear=${currYear}, currMonth=${currMonth})}">
-                <label for="descr">Einahme: </label>
-                <input type="text" id="descr" th:field="*{descr}" placeholder="z.B. Gehalt">
-                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
-
-                <label for="betrag">Betrag:</label>
-                <input type="number" id="betrag" th:field="*{betrag}" step="0.01" min="0">
-                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
-
-                <input type="hidden" th:field="*{isIncome}" value="true">
-
-                <label for="startMonat">Startmonat:</label>
-                <input type="month" id="startMonat" th:field="*{start}" required>
-
-                <label>
-                    <input type="checkbox" id="endToggle" onchange="toggleEndmonat()" checked>
-                    Kein Endmonat (läuft unbefristet)
-                </label>
-
-                <div id="endmonthSection" style="display: none;">
-                    <label for="endMonth">Endmonat</label>
-                    <input type="month" id="endMonth" th:field="*{end}">
-                </div>
-
-                <button type="submit">Hinzufügen</button>
-            </form>
+    <div class="top-button-container">
+        <a href="/pots" class="top-button-link">&rarr; Zu den Pots</a>
+        <div class="top-button-right">
+            <button onclick="openModalOverview()">Überblick Feste Einnahmen und Ausgaben</button>
+            <button onclick="openModalToPots()">Geld auf Pots verteilen</button>
         </div>
     </div>
 
-    <div class="tocenter">
+    <div th:replace="fragments/incomeAndExpenseForm :: incomeAndExpenseForm"></div>
+
+    <div class="fixed-cost-button-class">
+        <button onclick="openModalIn() ">+ Monatliche Einnahme hinzufügen</button>
         <button onclick="openModalOut() ">+ Monatliche Ausgabe hinzufügen</button>
     </div>
 
-    <div id="modal-out" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" onclick="closeModalOut()">&times;</span>
+    <div th:replace="fragments/fixedIncomeForm:: fixedIncome"></div>
 
-            <form method="post" th:object="${festeAusgabe}" th:action="@{/{currYear}/{currMonth}/festeAusgabe(currYear=${currYear}, currMonth=${currMonth})}">
-                <label for="descr-out">Ausgabe: </label>
-                <input type="text" id="descr-out" th:field="*{descr}" placeholder="z.B. Miete">
-                <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
+    <div th:replace="fragments/fixedExpenseForm:: fixedExpense"></div>
 
-                <label for="betrag-out">Betrag:</label>
-                <input type="number" id="betrag-out" th:field="*{betrag}" step="0.01" min="0">
-                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+    <div th:replace="fragments/toPotsForm:: toPots"></div>
 
-                <input type="hidden" th:field="*{isIncome}" value="false">
-
-                <label for="startMonatOut">Startmonat:</label>
-                <input type="month" id="startMonatOut" th:field="*{start}" required>
-
-                <label>
-                    <input type="checkbox" id="endToggleOut" onchange="toggleEndmonatOut()" checked>
-                    Kein Endmonat (läuft unbefristet)
-                </label>
-
-                <div id="endmonthSectionOut" style="display: none;">
-                    <label for="endMonthOut">Endmonat</label>
-                    <input type="month" id="endMonthOut" th:field="*{endValue}">
-                </div>
-
-                <label for="freq">Häufigkeit: </label>
-                <select id="freq" th:field="*{frequency}">
-                    <option th:each="option: ${T(de.ftracker.model.costDTOs.Interval).values()}" th:value="${option}" th:text="${option}">Intervall</option>
-                </select>
-                <button type="submit">Hinzufügen</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="tocenter">
-        <button onclick="openModalToPots() ">Geld auf Pots verteilen</button>
-    </div>
-
-
-
-    <div id = "modal-to-pots" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" onclick="closeModalToPots()">&times;</span>
-            <form method="post" th:action="@{/{currYear}/{currMonth}/toPots (currYear=${currYear}, currMonth=${currMonth})}">
-                <label for="money-amount">Betrag: </label>
-                <input type="number" id="money-amount" name="amount">
-
-                <!--<label>
-                    <input type="checkbox" id ="togglePotSelection" onchange="togglePotSelection()" checked>
-                    Geld wird nicht auf speziellen Pot verteilt
-                </label>-->
-
-                <div id ="potSelection">
-                    <label for="potSelect">Pot: </label>
-                    <select name="potSelect" id="potSelect">
-                        <option value="">-- kein Pot --</option>
-                        <option th:each="pot: ${pots}" th:text="*{pot.getName()}" th:value="${pot.name}" th:name="${pot.name}"></option>
-                    </select>
-                </div>
-
-                <button type="submit">Abschicken</button>
-            </form>
-
-        </div>
-    </div>
-
-    <div class="tocenter">
-        <button onclick="openModalOverview() ">Überblick Feste Einnahmen und Ausgaben</button>
-    </div>
-
-    <div id="overview" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" onclick="closeModalOverview()">&times;</span>
-            <h1>Überblick</h1>
-            <table>
-                <thead>
-                <tr>
-                    <th>Einnahme</th>
-                    <th>Betrag</th>
-                    <th>Frequenz</th>
-                    <th>Startmonat</th>
-                    <th>Endmonat</th>
-                    <th>-</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="fEinnahme: ${festeEinnahmen}">
-                    <td th:text="${fEinnahme.descr}"></td>
-                    <td th:text="${#numbers.formatDecimal(fEinnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
-                    <td th:text="${fEinnahme.frequency}">monaltich</td>
-                    <td th:text="${fEinnahme.start}"></td>
-                    <td th:text="${fEinnahme.endValue != null ? fEinnahme.endValue : '-'}">-</td>
-                    <td>
-                        <form method="post" th:action="@{/{year}/{month}/deleteFixedEinnahme(year=${currYear}, month=${currMonth})}">
-                            <input type="hidden" name="descr" th:value="${fEinnahme.descr}">
-                            <input type="hidden" name="start" th:value="${fEinnahme.start}">
-                            <button type="submit">-</button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <table>
-                <thead>
-                <tr>
-                    <th>Ausgabe</th>
-                    <th>Betrag</th>
-                    <th>Frequenz</th>
-                    <th>Startmonat</th>
-                    <th>Endmonat</th>
-                    <th>-</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="fAusgabe: ${festeAusgaben}">
-                    <td th:text="${fAusgabe.descr}"></td>
-                    <td th:text="${#numbers.formatDecimal(fAusgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
-                    <td th:text="${fAusgabe.frequency}">monaltich</td>
-                    <td th:text="${fAusgabe.start}"></td>
-                    <td th:text="${fAusgabe.endValue != null ? fAusgabe.endValue: '-'}">-</td>
-                    <td>
-                        <form method="post" th:action="@{/{year}/{month}/deleteFixedAusgabe(year=${currYear}, month=${currMonth})}">
-                            <input type="hidden" name="descr" th:value="${fAusgabe.descr}">
-                            <input type="hidden" name="start" th:value="${fAusgabe.start}">
-                            <button type="submit">-</button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <div th:replace="fragments/overviewFixedTable:: overviewFixed"></div>
 
     <!--
 
@@ -245,130 +56,18 @@
         </div>
     </div>
     -->
-
-    <div id="einnamen-table">
-        <table>
-            <thead>
-            <tr>
-                <th>Einname</th>
-                <th>Betrag</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="einnahme: ${einnahmen}">
-                <td th:text="${einnahme.descr}"></td>
-                <td th:text="${#numbers.formatDecimal(einnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
-            </tr>
-            </tbody>
-        </table>
-        <div class="sum-in">
-            <b>Summe: </b>
-            <span th:text="${#numbers.formatDecimal(summeIn, 1, 'COMMA', 2, 'POINT')}">0.00</span>
-            <span>€ </span>
-        </div>
-    </div>
-
-    <div class="ausgaben-table">
-        <table>
-            <thead>
-            <tr>
-                <th>Ausgabe</th>
-                <th>Kosten</th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr th:each="ausgabe: ${ausgaben}">
-                    <td th:text="${ausgabe.descr}"></td>
-                    <td th:text="${#numbers.formatDecimal(ausgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="sum-out">
-            <b>Summe: </b>
-            <span th:text="${#numbers.formatDecimal(summeOut, 1, 'COMMA', 2, 'POINT')}">0.00</span>
-            <span>€</span>
-        </div>
-    </div>
     <div class="diff">
         <b>Differenz: </b>
         <span th:text="${#numbers.formatDecimal(differenz, 1, 'COMMA', 2, 'POINT')}">0.00</span>
         <span>€</span>
     </div>
 
+    <div class="tables-container">
+        <div th:replace="fragments/incomeAndExpenseTable:: incomeTable"></div>
+        <div th:replace="fragments/incomeAndExpenseTable:: expenseTable"></div>
+    </div>
 
-    <script>
-        function openModalIn() {
-            document.getElementById('modal-in').classList.remove('hidden');
-        }
-
-        function closeModalIn() {
-            document.getElementById('modal-in').classList.add('hidden');
-        }
-
-        function openModalOut() {
-            document.getElementById('modal-out').classList.remove('hidden');
-        }
-
-        function closeModalOut() {
-            document.getElementById('modal-out').classList.add('hidden');
-        }
-
-        function openModalToPots() {
-            document.getElementById('modal-to-pots').classList.remove('hidden');
-        }
-
-        function closeModalToPots() {
-            document.getElementById('modal-to-pots').classList.add('hidden');
-        }
-
-        function openModalOverview() {
-            document.getElementById('overview').classList.remove('hidden');
-        }
-
-        function closeModalOverview() {
-            document.getElementById('overview').classList.add('hidden');
-        }
-
-        function toggleEndmonat() {
-            const checkbox = document.getElementById("endToggle");
-            const section = document.getElementById("endmonthSection");
-            if (checkbox.checked) {
-                section.style.display = "none";
-                document.getElementById("endMonth").value = "";
-            } else {
-                section.style.display = "block";
-            }
-        }
-
-        function toggleEndmonatOut() {
-            const checkbox = document.getElementById("endToggleOut");
-            const section = document.getElementById("endmonthSectionOut");
-            if (checkbox.checked) {
-                section.style.display = "none";
-                document.getElementById("endMonthOut").value = "";
-            } else {
-                section.style.display = "block";
-            }
-        }
-
-        window.addEventListener("DOMContentLoaded", () => {
-            toggleEndmonat();
-            toggleEndmonatOut();
-        });
-
-    </script>
-    <!--
-    <script>
-        function openModalPot() {
-            document.getElementById('modal-pot').classList.remove('hidden');
-        }
-
-        function closeModalPot() {
-            document.getElementById('modal-pot').classList.add('hidden');
-        }
-
-    </script>
-    -->
+    <div th:replace="fragments/scripts :: scripts"></div>
 
 </body>
 </html>

@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class PotManager {
@@ -27,7 +29,9 @@ public class PotManager {
     }
 
     public List<BudgetPot> getPots() {
-        return potRepository.findAll();
+        return potRepository.findAll().stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public BigDecimal getUndistributed() {
