@@ -127,6 +127,11 @@ button:hover {
     cursor: pointer;
     transition: color 0.2s;
 }
+
+.arrow:hover {
+    color: #2980b9;
+}
+
 table {
     width: 300px;
     border-collapse: separate;           /* für abgerundete Ecken */
