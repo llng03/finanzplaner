@@ -169,6 +169,24 @@ public class CostManager {
         fixedCostsRepository.deleteByDescrAndStart(ausgabe, start.getYear(), start.getMonthValue());
     }
 
+    public void deleteFromIncome(Long id, int year, int month) {
+        CostTables table = costTablesRepository.customFind(year, month)
+                .orElseThrow(() -> new IllegalArgumentException(
+                "No CostTable found for " + year + "-" + month
+        ));
+        table.getEinnahmen().removeIf(e -> e.getId().equals(id));
+        costTablesRepository.save(table);
+    }
+
+    public void deleteFromExp(Long id, int year, int month) {
+        CostTables table = costTablesRepository.customFind(year, month)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No CostTable found for " + year + "-" + month
+                ));
+        table.getAusgaben().removeIf(e -> e.getId().equals(id));
+        costTablesRepository.save(table);
+    }
+
     public BigDecimal getThisMonthsEinnahmenSum(YearMonth month) {
         List<Cost> einnahmen = getMonthsEinnahmen(month);
         einnahmen.addAll(getTablesOf(month).getEinnahmen());

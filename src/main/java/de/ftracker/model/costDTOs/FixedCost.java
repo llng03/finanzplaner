@@ -78,6 +78,11 @@ public class FixedCost extends Cost{
         return getEnd().orElse(null);
     }
 
+    @Override
+    public boolean isFixedCost() {
+        return true;
+    }
+
 
 
 

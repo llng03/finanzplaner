@@ -51,5 +51,9 @@ public class Cost {
         return isIncome;
     }
 
+    public boolean isFixedCost() {
+        return false;
+    }
+
     // equals() und hashCode() kannst du nur überschreiben, wenn nötig
 }

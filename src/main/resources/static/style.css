@@ -280,8 +280,7 @@ table td:nth-child(2) {
     background-color: #e74c3c;
     border: none;
     color: white;
-    border-radius: 6px;
-    padding: 4px 8px;
+    padding: 1px 1px;
     cursor: pointer;
 }
 

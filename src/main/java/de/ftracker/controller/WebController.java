@@ -124,6 +124,18 @@ public class WebController {
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
+    @PostMapping("/{currYear}/{currMonth}/deleteIncome")
+    public String deleteIncome(Model model, @RequestParam Long id, @PathVariable int currYear, @PathVariable int currMonth) {
+        costManager.deleteFromIncome(id, currYear, currMonth);
+        return "redirect:/" + currYear + "/" + currMonth;
+    }
+
+    @PostMapping("/{currYear}/{currMonth}/deleteExp")
+    public String deleteExp(Model model, @RequestParam Long id, @PathVariable int currYear, @PathVariable int currMonth) {
+        costManager.deleteFromExp(id, currYear, currMonth);
+        return "redirect:/" + currYear + "/" + currMonth;
+    }
+
     private void prepareModel(Model model, YearMonth month) {
         // - - month navigation - - //
         int currMonth = month.getMonth().getValue();

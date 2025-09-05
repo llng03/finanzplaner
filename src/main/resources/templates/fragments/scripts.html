@@ -32,6 +32,11 @@
       document.getElementById('overview').classList.add('hidden');
     }
 
+    function toggleDeleteColumns() {
+      const deleteCols = document.querySelectorAll(".delete-col");
+      deleteCols.forEach(col => col.classList.toggle("hidden"));
+    }
+
     function toggleEndmonat() {
       const checkbox = document.getElementById("endToggle");
       const section = document.getElementById("endmonthSection");

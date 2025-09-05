@@ -5,12 +5,19 @@
             <tr>
                 <th>Einname</th>
                 <th>Betrag</th>
+                <th class="delete-col hidden"></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="einnahme: ${einnahmen}">
                 <td th:text="${einnahme.descr}"></td>
                 <td th:text="${#numbers.formatDecimal(einnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td class="delete-col hidden">
+                    <form method="post" th:if="${!einnahme.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteIncome(currYear=${currYear}, currMonth=${currMonth})}">
+                        <input type="hidden" name="id" th:value="${einnahme.id}">
+                        <button type="submit" class="delete-btn">🗑</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -29,12 +36,19 @@
             <tr>
                 <th>Ausgabe</th>
                 <th>Kosten</th>
+                <th class="delete-col hidden"></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="ausgabe: ${ausgaben}">
                 <td th:text="${ausgabe.descr}"></td>
                 <td th:text="${#numbers.formatDecimal(ausgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td class="delete-col hidden">
+                    <form method="post" th:if="${!ausgabe.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteExp(currYear=${currYear}, currMonth=${currMonth})}">
+                        <input type="hidden" name="id" th:value="${ausgabe.id}">
+                        <button type="submit" class="delete-btn">🗑</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
