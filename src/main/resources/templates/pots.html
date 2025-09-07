@@ -25,7 +25,7 @@
                 <h3 th:text="${pot.name}">Pot Name</h3>
                 <form method="post" th:action="@{/pots/deletePot}">
                     <input type="hidden" name="potName" th:value="${pot.name}">
-                    <button type="submit" class="delete-btn">🗑️</button>
+                    <button type="submit" class="delete-btn">x</button>
                 </form>
             </div>
             <button th:onclick="'openPayModal(\'' + ${pot.id} + '\')'">Geld herausnehmen</button>

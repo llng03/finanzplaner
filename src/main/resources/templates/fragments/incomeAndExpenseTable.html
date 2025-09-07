@@ -15,7 +15,7 @@
                 <td class="delete-col hidden">
                     <form method="post" th:if="${!einnahme.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteIncome(currYear=${currYear}, currMonth=${currMonth})}">
                         <input type="hidden" name="id" th:value="${einnahme.id}">
-                        <button type="submit" class="delete-btn">🗑</button>
+                        <button type="submit" class="delete-btn">x</button>
                     </form>
                 </td>
             </tr>
@@ -46,7 +46,7 @@
                 <td class="delete-col hidden">
                     <form method="post" th:if="${!ausgabe.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteExp(currYear=${currYear}, currMonth=${currMonth})}">
                         <input type="hidden" name="id" th:value="${ausgabe.id}">
-                        <button type="submit" class="delete-btn">🗑</button>
+                        <button type="submit" class="delete-btn">x</button>
                     </form>
                 </td>
             </tr>
