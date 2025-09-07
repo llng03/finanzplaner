@@ -1,9 +1,19 @@
 package de.ftracker.model.costDTOs;
 
 public enum Interval {
-    MONTHLY,
-    QUARTERLY,
-    SEMI_ANNUAL,
-    ANNUAL
+    MONTHLY("Montlich"),
+    QUARTERLY("Vierteljährlich"),
+    SEMI_ANNUAL("Halbjährlich"),
+    ANNUAL("Jährlich");
+
+    private final String label;
+
+    Interval(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }
 
